@@ -1,4 +1,4 @@
-package main.edu.ithaca.group5;
+package edu.ithaca.group5;
 
 import java.util.List;
 
