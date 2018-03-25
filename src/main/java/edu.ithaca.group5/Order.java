@@ -54,4 +54,13 @@ public class Order {
     public void setPrice(double price) {
         this.price = price;
     }
+
+    public String orderDetails(){
+        String details = "Order ID: " + id + "\n"
+                + "Perscription: " + name + "\n"
+                + "Client: " + client.name + "\n"
+                + "Ready: " + isValidated + "\n"
+                + "Price: " + price;
+        return details;
+    }
 }
