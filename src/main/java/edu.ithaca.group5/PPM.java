@@ -12,6 +12,12 @@ public class PPM {
         dbConnection = DriverManager.getConnection(dbHost, dbUser, dbPassword);
     }
 
+    /**
+     * Logs user into the PPM. If the user doesn't match anything in the db, returns null, otherwise returns User object
+     * @param username User's username
+     * @param password User's password
+     * @return corresponding User, otherwise null
+     */
     public User login(String username, String password) {
         try {
             Statement statement = dbConnection.createStatement();
