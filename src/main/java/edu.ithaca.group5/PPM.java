@@ -19,9 +19,6 @@ public class PPM {
             ResultSet results = statement.executeQuery("SELECT id, name, username, password, type FROM user where username='" +
                     username + "' and password='" + password + "'");
             if (results.next()) {
-                //activeUser = new User(results.getLong("id"), results.getString("name"),
-                //        results.getString("username"), results.getString("password"));
-                //return activeUser;
                 switch (results.getString("type")) {
                     case "client":      activeUser = new Client(results.getLong("id"), results.getString("name"),
                                             results.getString("username"), results.getString("password"));
