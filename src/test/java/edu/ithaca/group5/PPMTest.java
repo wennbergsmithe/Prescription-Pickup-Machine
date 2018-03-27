@@ -62,4 +62,179 @@ class PPMTest {
         statement.close();
     }
 
+    @Test
+    public void createUserTest() throws SQLException {
+        //Database Setup
+        Statement statement = dbConnection.createStatement();
+        ResultSet results;
+
+        String currentName;
+        String currentUsername;
+        String currentPassword;
+        User tempUser;
+
+
+        //Creating a user without having an active account
+        ppm.activeUser = null;
+        try {
+            currentName = "testAccount1";
+            currentUsername = "testAccountUser1";
+            currentPassword = "testAccountPass1";
+
+            tempUser = ppm.createUser(currentName, currentUsername, currentPassword, "client");
+            assertNull(tempUser);
+
+        } catch (UsernameTakenException e) {
+            System.out.println("Error in createUser testing code: redundant username!");
+        }
+
+        //Creating a user who already exists
+        ppm.activeUser = new Pharmacist(-1, "thePharmacist", "pharmacistmain", "tempP0");
+        currentName = "testAccount2";
+        currentUsername = "testAccountUser2";
+        currentPassword = "testAccountPass2";
+        try {
+            tempUser = ppm.createUser(currentName, currentUsername, currentPassword, "pharmacist");
+        } catch (UsernameTakenException e) {
+            System.out.println("Error in createUser testing code: redundant username!");
+        }
+
+        try {
+            tempUser = ppm.createUser(currentName, currentUsername, currentPassword, "pharmacist");
+            fail("Failed to throw exception when the desired username was taken");
+        }
+        catch (UsernameTakenException e){}
+
+        //Different combinations of different types of active users trying to create different types of users
+        try {
+            //Client as Active User
+            ppm.activeUser = new Client(-1, "theClient", "clientmain", "tempC0");
+            //CANNOT create a Client
+            currentName = "CMadeByC";
+            currentUsername = "client1";
+            currentPassword = "tempC1";
+            tempUser = ppm.createUser(currentName, currentUsername, currentPassword, "client");
+            assertNull(tempUser);
+
+            //CANNOT create an Employee
+            currentName = "EMadeByC";
+            currentUsername = "employee1";
+            currentPassword = "tempE1";
+            tempUser = ppm.createUser(currentName, currentUsername, currentPassword, "employee");
+            assertNull(tempUser);
+
+            //CANNOT create a Pharmacist
+            currentName = "PMadeByC";
+            currentUsername = "pharmacist1";
+            currentPassword = "tempP1";
+            tempUser = ppm.createUser(currentName, currentUsername, currentPassword, "pharmacist");
+            assertNull(tempUser);
+
+
+
+            //Employee as Active User
+            ppm.activeUser = new Employee(-1, "theEmployee", "employeemain", "tempE0");
+            //CAN create a Client
+            currentName = "CMadeByE";
+            currentUsername = "client2";
+            currentPassword = "tempC2";
+            tempUser = ppm.createUser(currentName, currentUsername, currentPassword, "client");
+            assertEquals(tempUser.name, currentName);
+            assertEquals(tempUser.username, currentUsername);
+            assertEquals(tempUser.password, currentPassword);
+            results = statement.executeQuery("SELECT id, name, username, password, type FROM user where username='" +
+                    currentUsername + "' and password='" + currentPassword + "'");
+            if (results.next()) {
+                assertEquals(results.getString("name"), currentName);
+                assertEquals(results.getString("username"), currentUsername);
+                assertEquals(results.getString("password"), currentPassword);
+                assertEquals(results.getString("type"), "client");
+            }
+            else {
+                fail("new user was not added to database");
+            }
+
+            //CANNOT create an Employee
+            currentName = "EMadeByE";
+            currentUsername = "employee2";
+            currentPassword = "tempE2";
+            tempUser = ppm.createUser(currentName, currentUsername, currentPassword, "employee");
+            assertNull(tempUser);
+
+            //CANNOT create a Pharmacist
+            currentName = "PMadeByE";
+            currentUsername = "pharmacist2";
+            currentPassword = "tempP2";
+            tempUser = ppm.createUser(currentName, currentUsername, currentPassword, "pharmacist");
+            assertNull(tempUser);
+
+
+
+            //Pharmacist as Active User
+            ppm.activeUser = new Pharmacist(-1, "thePharmacist", "pharmacistmain", "tempP0");
+            //CAN create a Client
+            currentName = "CMadeByP";
+            currentUsername = "client3";
+            currentPassword = "tempC3";
+            tempUser = ppm.createUser(currentName, currentUsername, currentPassword, "client");
+            assertEquals(tempUser.name, currentName);
+            assertEquals(tempUser.username, currentUsername);
+            assertEquals(tempUser.password, currentPassword);
+            results = statement.executeQuery("SELECT id, name, username, password, type FROM user where username='" +
+                    currentUsername + "' and password='" + currentPassword + "'");
+            if (results.next()) {
+                assertEquals(results.getString("name"), currentName);
+                assertEquals(results.getString("username"), currentUsername);
+                assertEquals(results.getString("password"), currentPassword);
+                assertEquals(results.getString("type"), "client");
+            }
+            else {
+                fail("new user was not added to database");
+            }
+
+            //CAN create an Employee
+            currentName = "EMadeByP";
+            currentUsername = "employee3";
+            currentPassword = "tempE3";
+            tempUser = ppm.createUser(currentName, currentUsername, currentPassword, "employee");
+            assertEquals(tempUser.name, currentName);
+            assertEquals(tempUser.username, currentUsername);
+            assertEquals(tempUser.password, currentPassword);
+            results = statement.executeQuery("SELECT id, name, username, password, type FROM user where username='" +
+                    currentUsername + "' and password='" + currentPassword + "'");
+            if (results.next()) {
+                assertEquals(results.getString("name"), currentName);
+                assertEquals(results.getString("username"), currentUsername);
+                assertEquals(results.getString("password"), currentPassword);
+                assertEquals(results.getString("type"), "employee");
+            }
+            else {
+                fail("new user was not added to database");
+            }
+
+            //CAN create a Pharmacist
+            currentName = "PMadeByP";
+            currentUsername = "pharmacist3";
+            currentPassword = "tempP3";
+            tempUser = ppm.createUser(currentName, currentUsername, currentPassword, "pharmacist");
+            assertEquals(tempUser.name, currentName);
+            assertEquals(tempUser.username, currentUsername);
+            assertEquals(tempUser.password, currentPassword);
+            results = statement.executeQuery("SELECT id, name, username, password, type FROM user where username='" +
+                    currentUsername + "' and password='" + currentPassword + "'");
+            if (results.next()) {
+                assertEquals(results.getString("name"), currentName);
+                assertEquals(results.getString("username"), currentUsername);
+                assertEquals(results.getString("password"), currentPassword);
+                assertEquals(results.getString("type"), "pharmacist");
+            }
+            else {
+                fail("new user was not added to database");
+            }
+
+        } catch (UsernameTakenException e) {
+            System.out.println("Error in createUser testing code: redundant usernames!");
+        }
+    }
+
 }
