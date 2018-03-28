@@ -137,6 +137,77 @@ public class PPM {
     }
 
     public static void main(String[] args) {
+        try {
+            PPM ppm = new PPM("jdbc:mysql://localhost:3306/test_dd", "danny", "danny97101");
+            ppm.activeUser = null;
+            Scanner console = new Scanner(System.in);
+            System.out.println("Welcome to the Prescription Pickup Machine!\n" +
+                    "Current Commands:\n" +
+                    "create - Creates a new account\n" +
+                    "login - Log into an existing account\n");
 
+            String currentInput;
+            boolean done = false;
+            while (!done) {
+                currentInput = console.nextLine();
+                if (currentInput == "create") {
+                    System.out.println("To create an account you must provide a name, username, password, and type");
+                    System.out.println("Enter a name:");
+                    String name = console.nextLine();
+                    System.out.println("Enter a username:");
+                    String username = console.nextLine();
+                    System.out.println("Enter a password:");
+                    String password = console.nextLine();
+                    System.out.println("Enter an account type (client, employee, or pharmacist):");
+                    String type = console.nextLine();
+                    type.toLowerCase();
+
+                    //Make sure the type is an elligible type
+                    if (type == "client" || type == "employee" || type == "pharmacist") {
+                        try {
+                            User createdUser = ppm.createUser(name, username, password, type);
+                            if (createdUser == null) {
+                                System.out.println("Error: you don't have permission to create that type of user!");
+                            }
+                            else {
+                                System.out.println("Successfully created a new user with a name of '" + createdUser.name + "'!");
+                            }
+
+                        } catch (UsernameTakenException e) {
+                            System.out.println("Error: the username '" + e.desiredName + "' is already taken");
+                        }
+                    }
+                    else {
+                        System.out.println("Error: not an eligible account type");
+                    }
+                    //Add another line for neatness
+                    System.out.println();
+                }
+                else if (currentInput == "login") {
+                    System.out.println("Enter a username:");
+                    String username = console.nextLine();
+                    System.out.println("Enter a password:");
+                    String password = console.nextLine();
+
+                    User newUser = ppm.login(username, password);
+                    if (newUser != null) {
+                        System.out.println("Successfully logged into " + newUser.name + "'s account!");
+                        ppm.activeUser = newUser;
+                    }
+                    else {
+                        System.out.println("Error: could not complete the login");
+                    }
+                    //Add another line for neatness
+                    System.out.println();
+                }
+                else {
+                    System.out.println("Invalid Input!\n");
+                }
+
+            }
+        } catch (SQLException e) {
+            System.out.println("Error regarding SQL Database");
+            e.printStackTrace();
+        }
     }
 }
