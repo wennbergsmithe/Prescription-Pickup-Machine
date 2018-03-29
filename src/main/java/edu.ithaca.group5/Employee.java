@@ -1,5 +1,7 @@
 package edu.ithaca.group5;
 
+import java.sql.Statement;
+
 public class Employee extends User {
 
 
@@ -14,4 +16,6 @@ public class Employee extends User {
     public void validateOrder(Order theOrder){
         theOrder.setValidated(true);
     }
+
+
 }

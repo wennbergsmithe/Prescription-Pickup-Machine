@@ -1,5 +1,6 @@
 package edu.ithaca.group5;
 
+import javax.swing.plaf.nimbus.State;
 import java.sql.*;
 
 public class PPM {
@@ -49,4 +50,35 @@ public class PPM {
         }
         return null;
     }
+
+    /**
+     * Function prints a list of active orders to the console
+     */
+
+    public void viewOrders(){
+        try{
+            Statement statement = dbConnection.createStatement();
+            ResultSet rslt = statement.executeQuery("SELECT * FROM prescription");
+            while (rslt.next()){
+                long id = rslt.getLong("id");
+                String name = rslt.getString("name");
+                long clientId = rslt.getLong("client_id");
+                boolean isVal = rslt.getBoolean("is_validated");
+                double price = rslt.getDouble("price");
+
+                ResultSet clientStuff = statement.executeQuery("SELECT id, name, username, password, type FROM user where id='" + id + "'");
+                Client client = new Client(clientStuff.getLong("id"), clientStuff.getString("name"),
+                        clientStuff.getString("username"), clientStuff.getString("password"));
+
+                Order currentOrder = new Order(id,name,client,price);
+                System.out.println(currentOrder.toString());
+                System.out.println("\n\n");
+            }
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+    }
+
 }
