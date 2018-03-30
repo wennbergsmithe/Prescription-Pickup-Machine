@@ -61,5 +61,10 @@ class PPMTest {
 
         statement.close();
     }
+//
+//    @Test
+//    public void viewOrders(){
+//        ppm.viewOrders();
+//    }
 
 }

@@ -66,13 +66,15 @@ public class PPM {
                 boolean isVal = rslt.getBoolean("is_validated");
                 double price = rslt.getDouble("price");
 
-                ResultSet clientStuff = statement.executeQuery("SELECT id, name, username, password, type FROM user where id='" + id + "'");
-                Client client = new Client(clientStuff.getLong("id"), clientStuff.getString("name"),
-                        clientStuff.getString("username"), clientStuff.getString("password"));
+                ResultSet clientStuff = statement.executeQuery("SELECT id, name, username, password, type FROM user where id=" + clientId);
+                if(clientStuff.next()){
+                    Client client = new Client(clientStuff.getLong("id"), clientStuff.getString("name"),
+                            clientStuff.getString("username"), clientStuff.getString("password"));
 
-                Order currentOrder = new Order(id,name,client,price);
-                System.out.println(currentOrder.toString());
-                System.out.println("\n\n");
+                    Order currentOrder = new Order(id,name,client,price);
+                    System.out.println(currentOrder.toString());
+                    System.out.println("\n\n");
+                }
             }
 
         }catch (SQLException e){
