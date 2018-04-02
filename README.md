@@ -9,3 +9,5 @@ Waffle.io: https://waffle.io/martypv/Drug-Dispenser
 <br>Client Goal: Ability to log in as a different user and see/access order
 <br>Sprint 1 Review Doc: https://docs.google.com/document/d/1KYaCfnkpaszGC_eCHUknwHxCvao6SKyU7CCthwG4o6Q/edit?usp=sharing
 <br>Sprint 1 Retrospective: https://docs.google.com/document/d/1z5SASLC31TXuWqaEGOKKDKgIloSR0CjPSRMXJ44hDQg/edit
+
+<br>Sprint 2 Goal: The system has interactivity and can support transactions
