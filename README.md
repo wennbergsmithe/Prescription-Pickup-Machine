@@ -11,3 +11,8 @@ Waffle.io: https://waffle.io/martypv/Drug-Dispenser
 <br>Sprint 1 Retrospective: https://docs.google.com/document/d/1z5SASLC31TXuWqaEGOKKDKgIloSR0CjPSRMXJ44hDQg/edit
 
 <br>Sprint 2 Goal: The system has interactivity and can support transactions
+
+## Setup Notes
+
+Create two MySQL databases: one for testing and one for production. Seed both of these with the most recent sql script in `src/main/sql/`.
+<br>Copy `src/main/java/edu.ithaca.group5/ConfigIn.java` to `src/main/java/edu.ithaca.group5/Config.java` and replace constants with proper information.
