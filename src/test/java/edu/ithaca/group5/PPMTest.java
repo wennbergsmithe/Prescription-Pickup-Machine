@@ -11,9 +11,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PPMTest {
 
-    public static final String TEST_DB = "jdbc:mysql://localhost:3306/test_dd";
-    public static final String DB_USER = "danny";
-    public static final String DB_PASSWORD = "danny97101";
+    public static final String TEST_DB = Config.TEST_DB_HOST;
+    public static final String DB_USER = Config.DB_USER;
+    public static final String DB_PASSWORD = Config.DB_PASSWORD;
     private Connection dbConnection;
     private PPM ppm;
 
