@@ -57,4 +57,13 @@ class OrderTest {
         theOrder.payOrder("balance", 2.99);
         assertEquals(expected, theClient.balance, "Balance was not subtracted properly");
     }
+
+    @Test
+    void payOrderNotEnoughBalance(){
+
+        theClient.balance = 3.00;
+        theOrder.setPrice(5.00);
+        theOrder.payOrder("balance", 2.99);
+        assertEquals(false, theOrder.paid, "Balance cannot handle insufficient funds");
+    }
 }

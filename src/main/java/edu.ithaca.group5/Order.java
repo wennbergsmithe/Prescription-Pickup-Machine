@@ -90,7 +90,7 @@ public class Order {
                     paid = true;
                 } else if (originPrice < 0){
                     originPrice *= -1;
-                    client.balance += originPrice;
+                    client.addFunds(originPrice);
                     paid = true;
                 }
             } else if (check == "balance"){
