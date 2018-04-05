@@ -8,12 +8,6 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/openjdk:9-jdk
-      - image: circleci/mysql:5.7
-        command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin --innodb-large-prefix=true --innodb-file-format=Barracuda
-        environment:
-          MYSQL_USER: root
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
@@ -42,13 +36,8 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
-      - run: sudo apt install -y mysql-client
-      - run: sudo apt-get install mysql
-      - run: /usr/local/mysql/bin/mysql -u root -e "CREATE DATABASE test_dd"
-      - run: /usr/local/mysql/bin/mysql -u root test_dd < ~/repo/src/main/sql/V0__init.sql
       - run: cp ~/repo/src/main/java/edu.ithaca.group5/ConfigIn.java ~/repo/src/main/java/edu.ithaca.group5/Config.java
 
       # run tests!
       - run: mvn integration-test
 
-      - run: /usr/local/mysql/bin/mysql -u root -e "DROP DATABASE test_dd"
