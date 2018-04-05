@@ -42,6 +42,7 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
+      - run: sudo apt install -y mysql-client
       - run: /usr/local/mysql/bin/mysql -u root -e "CREATE DATABASE test_dd"
       - run: /usr/local/mysql/bin/mysql -u root test_dd < ~/repo/src/main/sql/V0__init.sql
       - run: cp ~/repo/src/main/java/edu.ithaca.group5/ConfigIn.java ~/repo/src/main/java/edu.ithaca.group5/Config.java
