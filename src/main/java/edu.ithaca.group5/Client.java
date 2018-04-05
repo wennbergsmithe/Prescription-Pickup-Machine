@@ -8,4 +8,9 @@ public class Client extends User {
     public Client(long id, String name, String username, String password) {
         super(id, name, username, password);
     }
+
+
+    public void addFunds(double amount){
+        balance += amount;
+    }
 }
