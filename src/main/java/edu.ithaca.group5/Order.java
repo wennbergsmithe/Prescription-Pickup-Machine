@@ -73,7 +73,7 @@ public class Order {
      * actual payment being made (only used when payment type is in cash)
      * SIDE EFFECTS: A Client object's 'balance' can be added to or subtracted
      * from, and an Order object's 'paid' boolean can be set to true
-     * @param method
+     * @param method 6
      * @param payment
      */
     public void payOrder(String method, double payment){
@@ -81,10 +81,10 @@ public class Order {
         String check = method.toLowerCase();
         double originPrice = price;
         if (isValidated == true){
-            if(check == "credit" || check == "debit"){
+            if(check.equals("credit") || check.equals("debit")){
                 originPrice -= price;
                 paid = true;
-            } else if (check == "cash"){
+            } else if (check.equals("cash")){
                 originPrice -= payment;
                 if (originPrice == 0){
                     paid = true;
@@ -93,7 +93,7 @@ public class Order {
                     client.addFunds(originPrice);
                     paid = true;
                 }
-            } else if (check == "balance"){
+            } else if (check.equals("balance")){
                 originPrice -= client.balance;
                 if(originPrice == 0){
                     client.balance -= price;
