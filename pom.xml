@@ -115,6 +115,13 @@
             <artifactId>jackson-databind</artifactId>
             <version>${jackson-2-version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>jdbc</artifactId>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libraries/mysql-connector.jar</systemPath>
+            <version>3.0</version>
+        </dependency>
 
     </dependencies>
 
