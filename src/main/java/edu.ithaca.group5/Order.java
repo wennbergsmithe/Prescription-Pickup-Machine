@@ -72,7 +72,7 @@ public class Order {
      * actual payment being made (only used when payment type is in cash)
      * SIDE EFFECTS: A Client object's 'balance' can be added to or subtracted
      * from, and an Order object's 'paid' boolean can be set to true
-     * @param method 6
+     * @param method
      * @param payment
      */
     public void payOrder(String method, double payment){
