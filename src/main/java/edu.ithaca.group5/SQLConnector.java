@@ -47,6 +47,42 @@ public class SQLConnector implements DBConnector {
         }
     }
 
+    public boolean isInDB(Client toCheck){
+        boolean isThere;
+        try {
+            Statement statement = connection.createStatement();
+            String sql = "SELECT 1 FROM user WHERE (name, username, password, type) VALUES ('" + toCheck.name + "', '" +
+                    toCheck.username + "', '" + toCheck.password + "', " + "'client'";
+            ResultSet results = statement.executeQuery(sql);
+
+            if (!results.next()){
+                statement.close();
+                return false;
+            }else{
+                statement.close();
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    public Client removeClient(Client clientToRemove){
+        try {
+            Statement statement = connection.createStatement();
+            String sql = "DELETE FROM user (name, username, password, type) VALUES ('" + clientToRemove.name + "', '" +
+                    clientToRemove.username + "', '" + clientToRemove.password + "', " + "'client')";
+            statement.execute(sql);
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return clientToRemove;
+    }
+
+
     @Override
     public User getUserByUsernameAndPassword(String username, String password) {
         User user;
