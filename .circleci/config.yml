@@ -37,6 +37,7 @@ jobs:
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
       - run: cp ~/repo/src/main/java/edu.ithaca.group5/ConfigIn.java ~/repo/src/main/java/edu.ithaca.group5/Config.java
+      - run: sed -i -e 's/ConfigIn/Config/g' ~/repo/src/main/java/edu.ithaca.group5/Config.java
 
       # run tests!
       - run: mvn integration-test
