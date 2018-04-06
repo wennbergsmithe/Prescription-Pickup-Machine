@@ -57,4 +57,22 @@ public class MockConnector implements DBConnector {
     public void emptyOrderTable() {
         prescriptions = new ArrayList<>();
     }
+
+    @Override
+    public void freezeUser(User user) {
+        for (User u : users) {
+            if (u.id == user.id) {
+                u.isFrozen = true;
+            }
+        }
+    }
+
+    @Override
+    public void unfreezeUser(User user) {
+        for (User u : users) {
+            if (u.id == user.id) {
+                u.isFrozen = false;
+            }
+        }
+    }
 }

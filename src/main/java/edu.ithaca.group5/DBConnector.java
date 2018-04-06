@@ -39,6 +39,9 @@ public interface DBConnector {
      */
     void emptyOrderTable();
 
+    void freezeUser(User user);
+
+    void unfreezeUser(User user);
 
 
 }

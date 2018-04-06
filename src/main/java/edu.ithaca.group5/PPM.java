@@ -36,6 +36,21 @@ public class PPM {
      */
     public User login(String username, String password) {
         activeUser = dbConnection.getUserByUsernameAndPassword(username, password);
+        if (activeUser == null) {
+            User match = dbConnection.getUserByUsername(username);
+            if (match != null) {
+                failedLoginAttempts.put(username, failedLoginAttempts.getOrDefault(username, 0) + 1);
+                if (failedLoginAttempts.get(username) >= MAX_LOGIN_ATTEMPTS) {
+                    match.isFrozen = true;
+                    dbConnection.freezeUser(match);
+                }
+            }
+        }
+
+        if (activeUser != null && activeUser.isFrozen) {
+            activeUser = null;
+        }
+
         return activeUser;
     }
 }

@@ -18,4 +18,14 @@ public class Employee extends User {
     public void validateOrder(Order theOrder){
         theOrder.setValidated(true);
     }
+
+    public void unfreezeUser(String username, DBConnector connection) {
+        User user = connection.getUserByUsername(username);
+        unfreezeUser(user, connection);
+    }
+
+    public void unfreezeUser(User user, DBConnector connection) {
+        user.isFrozen = false;
+        connection.unfreezeUser(user);
+    }
 }

@@ -26,12 +26,12 @@ class PPMTest {
         assertNull(ppm.login("test", "test"));
 
         // Client
-        ppm.dbConnection.addClient(new Client(-1, "test", "user", "pass", true));
+        ppm.dbConnection.addClient(new Client(-1, "test", "user", "pass", false));
         User user = ppm.login("user", "pass");
         assertEquals("test", user.name);
         assertEquals("user", user.username);
         assertEquals("pass", user.password);
-        assertTrue(user.isFrozen);
+        assertFalse(user.isFrozen);
         assertEquals(Client.class, user.getClass());
 
         // Employee
@@ -44,13 +44,17 @@ class PPMTest {
         assertEquals(Employee.class, user.getClass());
 
         // Pharmacist
-        ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test3", "user3", "pass3", true));
+        ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test3", "user3", "pass3", false));
         user = ppm.login("user3", "pass3");
         assertEquals("test3", user.name);
         assertEquals("user3", user.username);
         assertEquals("pass3", user.password);
-        assertTrue(user.isFrozen);
+        assertFalse(user.isFrozen);
         assertEquals(Pharmacist.class, user.getClass());
+
+        ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test4", "user4", "pass4", true));
+        user = ppm.login("user4", "pass4");
+        assertNull(user);
 
     }
 
