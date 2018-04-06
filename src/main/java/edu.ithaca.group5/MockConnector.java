@@ -38,6 +38,16 @@ public class MockConnector implements DBConnector {
     }
 
     @Override
+    public User getUserByUsername(String username) {
+        for (User user : users) {
+            if (user.username.equals(username)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public void emptyUserTable() {
         users = new ArrayList<>();
 

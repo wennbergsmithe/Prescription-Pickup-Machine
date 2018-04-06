@@ -57,13 +57,51 @@ public class SQLConnector implements DBConnector {
             if (results.next()) {
                 switch (results.getString("type")) {
                     case "client":      user = new Client(results.getLong("id"), results.getString("name"),
-                            results.getString("username"), results.getString("password"));
+                            results.getString("username"), results.getString("password"),
+                            results.getBoolean("isFrozen"));
                         break;
                     case "employee":    user = new Employee(results.getLong("id"), results.getString("name"),
-                            results.getString("username"), results.getString("password"));
+                            results.getString("username"), results.getString("password"),
+                            results.getBoolean("isFrozen"));
                         break;
                     case "pharmacist":  user = new Pharmacist(results.getLong("id"), results.getString("name"),
-                            results.getString("username"), results.getString("password"));
+                            results.getString("username"), results.getString("password"),
+                            results.getBoolean("isFrozen"));
+                        break;
+                    default:            return null;
+                }
+                statement.close();
+                return user;
+
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public User getUserByUsername(String username) {
+        User user;
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet results = statement.executeQuery("SELECT id, name, username, password, type FROM user where username='" +
+                    username + "'");
+            if (results.next()) {
+                switch (results.getString("type")) {
+                    case "client":      user = new Client(results.getLong("id"), results.getString("name"),
+                            results.getString("username"), results.getString("password"),
+                            results.getBoolean("isFrozen"));
+                        break;
+                    case "employee":    user = new Employee(results.getLong("id"), results.getString("name"),
+                            results.getString("username"), results.getString("password"),
+                            results.getBoolean("isFrozen"));
+                        break;
+                    case "pharmacist":  user = new Pharmacist(results.getLong("id"), results.getString("name"),
+                            results.getString("username"), results.getString("password"),
+                            results.getBoolean("isFrozen"));
                         break;
                     default:            return null;
                 }

@@ -1,10 +1,14 @@
 package edu.ithaca.group5;
 
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PPM {
     DBConnector dbConnection;
     User activeUser;
+    final int MAX_LOGIN_ATTEMPTS = 3;
+    Map<String, Integer> failedLoginAttempts = new HashMap<>();
 
     public PPM() throws SQLException {
         setupSQL();

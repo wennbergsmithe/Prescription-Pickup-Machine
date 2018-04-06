@@ -23,6 +23,13 @@ public interface DBConnector {
     User getUserByUsernameAndPassword(String username, String password);
 
     /**
+     * Returns the user with the entered username
+     * @param username
+     * @return
+     */
+    User getUserByUsername(String username);
+
+    /**
      * empties user table.
      */
     void emptyUserTable();
