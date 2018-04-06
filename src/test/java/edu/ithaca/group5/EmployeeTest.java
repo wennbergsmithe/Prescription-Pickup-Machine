@@ -15,7 +15,7 @@ class EmployeeTest {
 
         try{
             PPM tester = new PPM(true);
-            Client toDelete = new Client(123456,"Eli Wennberg Smith", "wennbergsmithe", "password");
+            Client toDelete = new Client(123456,"test1", "un", "pw");
 
             tester.dbConnection.addClient(toDelete);
             boolean isThere = tester.dbConnection.isInDB(toDelete);
