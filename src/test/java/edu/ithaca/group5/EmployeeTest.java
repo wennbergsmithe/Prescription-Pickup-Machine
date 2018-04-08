@@ -28,4 +28,29 @@ public class EmployeeTest {
         user = connection.getUserByUsername("user");
         assertFalse(user.isFrozen);
     }
+  
+      @Test
+    void validateOrder() {
+    }
+
+    @Test
+    void removeClient() {
+
+        try{
+            PPM tester = new PPM(true);
+            Client toDelete = new Client(123456,"test1", "un", "pw");
+
+            tester.dbConnection.addClient(toDelete);
+            boolean isThere = tester.dbConnection.isInDB(toDelete);
+
+            assertEquals(isThere,true);
+            tester.dbConnection.removeClient(toDelete);
+            isThere = tester.dbConnection.isInDB(toDelete);
+            assertEquals(isThere, false);
+        }catch (java.sql.SQLException e){
+            e.printStackTrace();
+        }
+
+    }
 }
+

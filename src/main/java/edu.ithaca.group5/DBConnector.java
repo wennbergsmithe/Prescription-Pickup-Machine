@@ -20,6 +20,22 @@ public interface DBConnector {
      */
     void addClient(Client client);
 
+
+    /**
+     * removes a client from the database
+     * @param clientToRemove
+     */
+    Client removeClient(Client clientToRemove);
+
+
+    /**
+     * checks to see if the specified client is in the database
+     * @param toCheck
+     * @return
+     */
+    boolean isInDB(Client toCheck);
+
+
     User getUserByUsernameAndPassword(String username, String password);
 
     /**

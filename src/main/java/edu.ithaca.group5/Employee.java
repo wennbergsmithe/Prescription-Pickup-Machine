@@ -19,6 +19,20 @@ public class Employee extends User {
         theOrder.setValidated(true);
     }
 
+
+
+    /**
+     * Allows an employee to remove a customer from the database upon request or unapproved activity
+     * @param ppm ppm instance
+     * @param client client to remove
+     * @return
+     */
+
+    public Client removeClient(PPM ppm, Client client){
+        ppm.dbConnection.removeClient(client);
+        return client;
+    }
+
     public void unfreezeUser(String username, DBConnector connection) {
         User user = connection.getUserByUsername(username);
         unfreezeUser(user, connection);
@@ -28,4 +42,5 @@ public class Employee extends User {
         user.isFrozen = false;
         connection.unfreezeUser(user);
     }
+
 }

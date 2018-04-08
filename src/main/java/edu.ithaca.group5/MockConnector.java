@@ -27,6 +27,16 @@ public class MockConnector implements DBConnector {
         users.add(client);
     }
 
+    public Client removeClient(Client clientToRemove){
+        users.remove(clientToRemove);
+        return clientToRemove;
+    }
+
+    public boolean isInDB(Client toCheck){
+        return users.contains(toCheck);
+    }
+
+
     @Override
     public User getUserByUsernameAndPassword(String username, String password) {
         for (User user : users) {
