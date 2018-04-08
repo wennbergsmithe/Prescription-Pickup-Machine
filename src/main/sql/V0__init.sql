@@ -4,6 +4,7 @@ create table user (
 	username		varchar(255),
 	password		varchar(255),
 	type			enum('client', 'employee', 'pharmacist'),
+	isFrozen	BOOL DEFAULT FALSE,
 	constraint pk_user primary key (id)
 );
 
