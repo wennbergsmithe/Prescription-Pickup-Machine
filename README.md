@@ -13,6 +13,7 @@ Waffle.io: https://waffle.io/martypv/Drug-Dispenser
 <br>Sprint 1 Retrospective: https://docs.google.com/document/d/1z5SASLC31TXuWqaEGOKKDKgIloSR0CjPSRMXJ44hDQg/edit
 
 <br>Sprint 2 Goal: The system has interactivity and can support transactions
+<br>Sprint 2 State Diagram: https://drive.google.com/open?id=1qyjgxeytqWew2RhaAJnpnFJAqLp2yGnJ
 
 ## Setup Notes
 
