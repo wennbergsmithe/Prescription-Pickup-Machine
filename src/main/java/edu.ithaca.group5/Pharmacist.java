@@ -18,8 +18,8 @@ public class Pharmacist extends Employee {
      * @param inPrice
      * @return theOrder
      */
-    public Order createOrder(long inId, String inName, Client inClient, double inPrice){
-        Order theOrder = new Order( inId, inName, inClient, inPrice);
+    public Order createOrder(long inId, String inName, Client inClient, double inPrice, String inWarnings){
+        Order theOrder = new Order( inId, inName, inClient, inPrice, inWarnings);
         return theOrder;
     }
 }

@@ -15,6 +15,7 @@ create table prescription (
 	is_validated		tinyint(1) default 0,
 	price			double,
 	paid            tintint(1) default 0,
+	warnings        varchar(255),
 	constraint pk_order primary key(id)
 );
 

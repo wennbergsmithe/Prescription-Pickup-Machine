@@ -8,14 +8,16 @@ public class Order {
     boolean isValidated;
     double price;
     boolean paid;
+    String warnings;
 
-    Order(long inId, String inName, Client inClient, double inPrice){
+    Order(long inId, String inName, Client inClient, double inPrice, String inWarnings){
         this.id = inId;
         this.name = inName;
         this.client = inClient;
         this.isValidated = false;
         this.price = inPrice;
         this.paid = false;
+        this.warnings = inWarnings;
     }
 
     public long getId(){
@@ -38,6 +40,10 @@ public class Order {
         return price;
     }
 
+    public String getWarnings() {
+        return warnings;
+    }
+
     public void setId(long id) {
         this.id = id;
     }
@@ -58,12 +64,17 @@ public class Order {
         this.price = price;
     }
 
+    public void setWarnings(String warnings) {
+        this.warnings = warnings;
+    }
+
     public String orderDetails(){
         String details = "Order ID: " + id + "\n"
                 + "Perscription: " + name + "\n"
                 + "Client: " + client.name + "\n"
                 + "Ready: " + isValidated + "\n"
-                + "Price: " + price;
+                + "Price: " + price + "\n"
+                + "DO NOT TAKE IF ALLERGIC TO: " + warnings;
         return details;
     }
 
