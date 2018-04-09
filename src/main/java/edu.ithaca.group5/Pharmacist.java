@@ -3,8 +3,12 @@ package edu.ithaca.group5;
 public class Pharmacist extends Employee {
 
 
+    public Pharmacist(long id, String name, String username, String password, boolean isFrozen) {
+        super(id, name, username, password, isFrozen);
+    }
+
     public Pharmacist(long id, String name, String username, String password) {
-        super(id, name, username, password);
+        this(id, name, username, password, false);
     }
 
 
@@ -18,8 +22,8 @@ public class Pharmacist extends Employee {
      * @param inPrice
      * @return theOrder
      */
-    public Order createOrder(long inId, String inName, Client inClient, double inPrice){
-        Order theOrder = new Order( inId, inName, inClient, inPrice);
+    public Order createOrder(long inId, String inName, Client inClient, double inPrice, String inWarnings){
+        Order theOrder = new Order( inId, inName, inClient, inPrice, inWarnings);
         return theOrder;
     }
 }

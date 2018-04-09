@@ -3,7 +3,9 @@ create table user (
 	name			varchar(255),
 	username		varchar(255),
 	password		varchar(255),
+	balance         double,
 	type			enum('client', 'employee', 'pharmacist'),
+	isFrozen	BOOL DEFAULT FALSE,
 	constraint pk_user primary key (id)
 );
 
@@ -13,6 +15,9 @@ create table prescription (
 	client_id		bigint,
 	is_validated		tinyint(1) default 0,
 	price			double,
+	paid            tinyint(1) default 0,
+	warnings        varchar(255),
 	constraint pk_order primary key(id)
 );
+
 

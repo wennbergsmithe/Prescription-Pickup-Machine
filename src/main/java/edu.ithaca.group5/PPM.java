@@ -1,6 +1,8 @@
 package edu.ithaca.group5;
 
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 class UsernameTakenException extends Exception {
@@ -8,18 +10,27 @@ class UsernameTakenException extends Exception {
 }
 
 public class PPM {
-    Connection dbConnection;
+    DBConnector dbConnection;
     User activeUser;
+    final int MAX_LOGIN_ATTEMPTS = 3;
+    Map<String, Integer> failedLoginAttempts = new HashMap<>();
 
-    public PPM(String dbHost, String dbUser, String dbPassword) throws SQLException {
+    public PPM() throws SQLException {
+        setupSQL();
+    }
+
+    public PPM(boolean test) throws SQLException {
+        if (test) {
+            dbConnection = new MockConnector();
+        } else {
+            setupSQL();
+        }
+    }
+
+    private void setupSQL() throws SQLException {
         // needed to register db driver
         DriverManager.registerDriver(new com.mysql.jdbc.Driver());
-        dbConnection = DriverManager.getConnection(dbHost, dbUser, dbPassword);
-        Statement statement = dbConnection.createStatement();
-        statement.execute("TRUNCATE TABLE user");
-        statement.execute("TRUNCATE TABLE prescription");
-        statement.execute("INSERT INTO user (name, username, password, type) VALUES ('testPharmacist', 'testPharmacist', 'password', 'pharmacist')");
-        statement.close();
+        dbConnection = new SQLConnector();
     }
 
     /**
@@ -29,39 +40,23 @@ public class PPM {
      * @return corresponding User, otherwise null
      */
     public User login(String username, String password) {
-        try {
-            Statement statement = dbConnection.createStatement();
-            // TODO: not safe from sql injection right now. Eventually use prepared statements
-            ResultSet results = statement.executeQuery("SELECT id, name, username, password, type FROM user where username='" +
-                    username + "' and password='" + password + "'");
-            if (results.next()) {
-                switch (results.getString("type")) {
-                    case "client":
-                        activeUser = new Client(results.getLong("id"), results.getString("name"),
-                                results.getString("username"), results.getString("password"));
-                        break;
-                    case "employee":
-                        activeUser = new Employee(results.getLong("id"), results.getString("name"),
-                                results.getString("username"), results.getString("password"));
-                        break;
-                    case "pharmacist":
-                        activeUser = new Pharmacist(results.getLong("id"), results.getString("name"),
-                                results.getString("username"), results.getString("password"));
-                        break;
-                    default:
-                        return null;
+        activeUser = dbConnection.getUserByUsernameAndPassword(username, password);
+        if (activeUser == null) {
+            User match = dbConnection.getUserByUsername(username);
+            if (match != null) {
+                failedLoginAttempts.put(username, failedLoginAttempts.getOrDefault(username, 0) + 1);
+                if (failedLoginAttempts.get(username) >= MAX_LOGIN_ATTEMPTS) {
+                    match.isFrozen = true;
+                    dbConnection.freezeUser(match);
                 }
-                statement.close();
-                return activeUser;
-
-            } else {
-                return null;
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return null;
+
+        if (activeUser != null && activeUser.isFrozen) {
+            activeUser = null;
+        }
+
+        return activeUser;
     }
 
     /**
