@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class OrderTest {
-    Client theClient = new Client(0,"John", "johnDoe", "1234", false,"");
+    Client theClient = new Client(0,"John", "johnDoe", "1234", false,"allergy2");
     Order theOrder = new Order(0,"Drug A", theClient, 2.99, "allergy1,allergy2,allergy3" );
 
     @Test
@@ -66,4 +66,30 @@ class OrderTest {
         theOrder.payOrder("balance", 2.99);
         assertEquals(false, theOrder.paid, "Balance cannot handle insufficient funds");
     }
+
+    @Test
+    void allergyFound(){
+        theClient.allergies = "allergy1";
+        assertEquals(true,theOrder.checkAllergies(),"cannot properly find allergy in first position");
+    }
+
+    @Test
+    void allergyFound2(){
+        assertEquals(true,theOrder.checkAllergies(),"cannot properly find allergy middle");
+    }
+
+    @Test
+    void allergyFound3(){
+        theClient.allergies = "allergy3";
+        assertEquals(true,theOrder.checkAllergies(),"cannot find allergy in last position");
+    }
+
+    @Test
+    void allergyNotFound(){
+        theOrder.warnings = "allergy1";
+        assertEquals(false,theOrder.checkAllergies(),"finds allergy where there is none");
+    }
+
+
+
 }

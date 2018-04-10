@@ -12,7 +12,6 @@ public class Pharmacist extends Employee {
     }
 
 
-
     /**
      * Takes in an id, name, client object and price.
      * Creates a new Order object with the Order constructor.
