@@ -43,7 +43,14 @@ public interface DBConnector {
      * @param username
      * @return
      */
-    User getUserByUsername(String username);
+    User getUserByUsername(String username);;
+
+    /**
+     * Gets the id of the user with the given username
+     * @param username the username of the desired user
+     * @return the id of the user with the given username, or -1 if the user was not found
+     */
+    int getIDByUsername(String username);
 
     /**
      * empties user table.
@@ -58,6 +65,5 @@ public interface DBConnector {
     void freezeUser(User user);
 
     void unfreezeUser(User user);
-
 
 }

@@ -94,66 +94,64 @@ public class PPM {
     public User createUser(String name, String username, String password, String type) throws UsernameTakenException {
         User createdUser = null;
 
-        try {
-            Statement statement = dbConnection.createStatement();
+        //Make sure the desired username does not already exist
+        User temp = dbConnection.getUserByUsername(username);
+        if (temp != null) {
+            //Name already exists: throw exception
+            UsernameTakenException e = new UsernameTakenException();
+            e.desiredName = username;
+            throw e;
+        }
 
-            //Make sure the desired username does not already exist
-            ResultSet results = statement.executeQuery("SELECT id, name, username, password, type FROM user where username='" +
-                    username + "'");
-            if (results.next()) {
-                //Name already exists: throw exception
-                UsernameTakenException e = new UsernameTakenException();
-                e.desiredName = username;
-                throw e;
-            }
+        //Determine the type of the current active user
+        String userType;
+        if (activeUser != null) {
+            userType = activeUser.getClass().getName();
+            userType = userType.toLowerCase();
+            String[] splitType = userType.split("\\.");
+            userType = splitType[splitType.length - 1];
+        }
+        else {
+            userType = "client";
+        }
 
-            //Determine the type of the current active user
-            String userType;
-            if (activeUser != null) {
-                results = statement.executeQuery("SELECT id, name, username, password, type FROM user where username='" +
-                        activeUser.username + "'");
-                if (results.next()) {
-                    userType = results.getString("type");
-                } else {
-                    return createdUser;
-                }
-            }
-            else {
-                userType = "client";
-            }
-
-            //Make sure the current active user has permission to create this type of account
-            if (userType.equals("client")) {
-                //Clients cannot make any accounts
+        //Make sure the current active user has permission to create this type of account
+        if (userType.equals("client")) {
+            //Clients cannot make any accounts
+            return createdUser;
+        } else if (userType.equals("employee")) {
+            //Employees cannot create employees or pharmacists
+            if (type.equals("employee")) {
                 return createdUser;
-            } else if (userType.equals("employee")) {
-                //Employees cannot create employees or pharmacists
-                if (type.equals("employee")) {
-                    return createdUser;
-                }
-                if (type.equals("pharmacist")) {
-                    return createdUser;
-                }
             }
+            if (type.equals("pharmacist")) {
+                return createdUser;
+            }
+        }
 
-            //User must not already exist: add them to the database
-            statement.execute("INSERT INTO user (name, username, password, type) VALUES ('" + name + "', '"
-                    + username + "', '" + password + "', '" + type + "')");
+        //User must not already exist: add them to the database
+        switch(type) {
+            case ("client"):
+                Client client = new Client(-1, name, username, password);
+                dbConnection.addClient(client);
+                createdUser = client;
+                break;
+            case("employee"):
+                Employee employee = new Employee(-1, name, username, password);
+                dbConnection.addEmployee(employee);
+                createdUser = employee;
+                break;
+            case("pharmacist"):
+                Pharmacist pharmacist = new Pharmacist(-1, name, username, password);
+                dbConnection.addPharmacist(pharmacist);
+                createdUser = pharmacist;
+                break;
+        }
 
+        if (createdUser != null) {
             //Get the user's database ID
-            results = statement.executeQuery("SELECT id, name, username, password, type FROM user where username='" +
-                    username + "'");
-            results.next();
-            long id = results.getRow();
-            //Possibly another method of getting rowID of a resultset?
-            //RowId rowid = results.getRowId(1);
-            //long id = Integer.parseInt(rowid.toString());
-
-            //Create the user object that will be returned
-            createdUser = new Client(id, name, username, password);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+            long id = dbConnection.getIDByUsername(username);
+            createdUser.id = id;
         }
         return createdUser;
     }
@@ -162,7 +160,7 @@ public class PPM {
 
     public static void main(String[] args) {
         try {
-            PPM ppm = new PPM(Config.TEST_DB_HOST, Config.DB_USER, Config.DB_PASSWORD);
+            PPM ppm = new PPM(true);
             User user = ppm.login("testPharmacist", "password");
             Scanner console = new Scanner(System.in);
             System.out.println("Welcome to the Prescription Pickup Machine!\n" +

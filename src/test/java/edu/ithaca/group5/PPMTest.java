@@ -72,13 +72,12 @@ class PPMTest {
 
     @Test
     public void createUserTest() throws SQLException {
-        //Database Setup
-        Statement statement = dbConnection.createStatement();
-        ResultSet results;
-
         String currentName = "";
         String currentUsername = "";
         String currentPassword = "";
+        Client tempC;
+        Employee tempE;
+        Pharmacist tempP;
         User tempUser;
 
 
@@ -98,8 +97,9 @@ class PPMTest {
 
         //Creating a user who already exists
         //Setup active PPM user
-        statement.execute("INSERT INTO user (name, username, password, type) VALUES ('thePharmacist', 'pharmacistmain', 'tempP0', 'pharmacist')");
-        ppm.activeUser = new Pharmacist(-1, "thePharmacist", "pharmacistmain", "tempP0");
+        tempP = new Pharmacist(-1, "thePharmacist", "pharmacistmain", "tempP0");
+        ppm.dbConnection.addPharmacist(tempP);
+        ppm.activeUser = tempP;
         //ppm.login("pharmacistmain", "tempP0");
 
         currentName = "testAccount2";
@@ -120,8 +120,8 @@ class PPMTest {
         //Different combinations of different types of active users trying to create different types of users
         try {
             //Client as Active User
-            statement.execute("INSERT INTO user (name, username, password, type) VALUES ('theClient', 'clientmain', 'tempC0', 'client')");
-            ppm.activeUser = new Client(-1, "theClient", "clientmain", "tempC0");
+            tempC = new Client(-1, "theClient", "clientmain", "tempC0");
+            ppm.activeUser = tempC;
             //CANNOT create a Client
             currentName = "CMadeByC";
             currentUsername = "client1";
@@ -146,8 +146,8 @@ class PPMTest {
 
 
             //Employee as Active User
-            statement.execute("INSERT INTO user (name, username, password, type) VALUES ('theEmployee', 'employeemain', 'tempE0', 'employee')");
-            ppm.activeUser = new Employee(-1, "theEmployee", "employeemain", "tempE0");
+            tempE = new Employee(-1, "theEmployee", "employeemain", "tempE0");
+            ppm.activeUser = tempE;
             //CAN create a Client
             currentName = "CMadeByE";
             currentUsername = "client2";
@@ -156,13 +156,13 @@ class PPMTest {
             assertEquals(tempUser.name, currentName);
             assertEquals(tempUser.username, currentUsername);
             assertEquals(tempUser.password, currentPassword);
-            results = statement.executeQuery("SELECT id, name, username, password, type FROM user where username='" +
-                    currentUsername + "' and password='" + currentPassword + "'");
-            if (results.next()) {
-                assertEquals(results.getString("name"), currentName);
-                assertEquals(results.getString("username"), currentUsername);
-                assertEquals(results.getString("password"), currentPassword);
-                assertEquals(results.getString("type"), "client");
+            User result = ppm.dbConnection.getUserByUsernameAndPassword(currentUsername, currentPassword);
+            if (result != null) {
+                assertEquals(result.name, currentName);
+                assertEquals(result.username, currentUsername);
+                assertEquals(result.password, currentPassword);
+                String[] temp = result.getClass().getName().toLowerCase().split("\\.");
+                assertEquals(temp[temp.length - 1], "client");
             }
             else {
                 fail("new user was not added to database");
@@ -185,8 +185,8 @@ class PPMTest {
 
 
             //Pharmacist as Active User
-            statement.execute("INSERT INTO user (name, username, password, type) VALUES ('thePharmacist', 'pharmacistmain', 'tempP0', 'pharmacist')");
-            ppm.activeUser = new Pharmacist(-1, "thePharmacist", "pharmacistmain", "tempP0");
+            tempP = new Pharmacist(-1, "thePharmacist", "pharmacistmain", "tempP0");
+            ppm.activeUser = tempP;
             //CAN create a Client
             currentName = "CMadeByP";
             currentUsername = "client3";
@@ -195,13 +195,13 @@ class PPMTest {
             assertEquals(tempUser.name, currentName);
             assertEquals(tempUser.username, currentUsername);
             assertEquals(tempUser.password, currentPassword);
-            results = statement.executeQuery("SELECT id, name, username, password, type FROM user where username='" +
-                    currentUsername + "' and password='" + currentPassword + "'");
-            if (results.next()) {
-                assertEquals(results.getString("name"), currentName);
-                assertEquals(results.getString("username"), currentUsername);
-                assertEquals(results.getString("password"), currentPassword);
-                assertEquals(results.getString("type"), "client");
+            result = ppm.dbConnection.getUserByUsernameAndPassword(currentUsername, currentPassword);
+            if (result != null) {
+                assertEquals(result.name, currentName);
+                assertEquals(result.username, currentUsername);
+                assertEquals(result.password, currentPassword);
+                String[] temp = result.getClass().getName().toLowerCase().split("\\.");
+                assertEquals(temp[temp.length - 1], "client");
             }
             else {
                 fail("new user was not added to database");
@@ -215,13 +215,13 @@ class PPMTest {
             assertEquals(tempUser.name, currentName);
             assertEquals(tempUser.username, currentUsername);
             assertEquals(tempUser.password, currentPassword);
-            results = statement.executeQuery("SELECT id, name, username, password, type FROM user where username='" +
-                    currentUsername + "' and password='" + currentPassword + "'");
-            if (results.next()) {
-                assertEquals(results.getString("name"), currentName);
-                assertEquals(results.getString("username"), currentUsername);
-                assertEquals(results.getString("password"), currentPassword);
-                assertEquals(results.getString("type"), "employee");
+            result = ppm.dbConnection.getUserByUsernameAndPassword(currentUsername, currentPassword);
+            if (result != null) {
+                assertEquals(result.name, currentName);
+                assertEquals(result.username, currentUsername);
+                assertEquals(result.password, currentPassword);
+                String[] temp = result.getClass().getName().toLowerCase().split("\\.");
+                assertEquals(temp[temp.length - 1], "employee");
             }
             else {
                 fail("new user was not added to database");
@@ -235,13 +235,13 @@ class PPMTest {
             assertEquals(tempUser.name, currentName);
             assertEquals(tempUser.username, currentUsername);
             assertEquals(tempUser.password, currentPassword);
-            results = statement.executeQuery("SELECT id, name, username, password, type FROM user where username='" +
-                    currentUsername + "' and password='" + currentPassword + "'");
-            if (results.next()) {
-                assertEquals(results.getString("name"), currentName);
-                assertEquals(results.getString("username"), currentUsername);
-                assertEquals(results.getString("password"), currentPassword);
-                assertEquals(results.getString("type"), "pharmacist");
+            result = ppm.dbConnection.getUserByUsernameAndPassword(currentUsername, currentPassword);
+            if (result != null) {
+                assertEquals(result.name, currentName);
+                assertEquals(result.username, currentUsername);
+                assertEquals(result.password, currentPassword);
+                String[] temp = result.getClass().getName().toLowerCase().split("\\.");
+                assertEquals(temp[temp.length - 1], "pharmacist");
             }
             else {
                 fail("new user was not added to database");
@@ -250,8 +250,5 @@ class PPMTest {
         } catch (UsernameTakenException e) {
             System.out.println("Error in createUser testing code: redundant usernames!");
         }
-
-        statement.close();
-
     }
 }
