@@ -122,12 +122,11 @@ public class Order {
         }
 
     }
-
-
+    
     /**
      * Creates an array of client allergies by splitting it by ','
      * Iterates through array and checks if the array item is contained
-     * in the order warnings. If found returns true. Else, returns false
+     * in the order warnings. If found returns true, else, returns false
      * @return boolean
      */
     public boolean checkAllergies(){
@@ -141,4 +140,8 @@ public class Order {
         }
         return false;
     }
+
+
+
+
 }
