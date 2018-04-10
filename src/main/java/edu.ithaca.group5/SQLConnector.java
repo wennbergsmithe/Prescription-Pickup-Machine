@@ -153,6 +153,22 @@ public class SQLConnector implements DBConnector {
     }
 
     @Override
+    public int getIDByUsername(String username) {
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet results = statement.executeQuery("SELECT id, name, username, password, type FROM user where username='" +
+                    username + "'");
+            statement.close();
+
+            results.next();
+            return results.getRow();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    @Override
     public void emptyUserTable() {
         Statement statement = null;
         try {
