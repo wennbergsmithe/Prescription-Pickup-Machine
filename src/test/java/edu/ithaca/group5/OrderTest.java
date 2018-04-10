@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class OrderTest {
-    Client theClient = new Client(0,"John", "johnDoe", "1234", false);
+    Client theClient = new Client(0,"John", "johnDoe", "1234", false,"");
     Order theOrder = new Order(0,"Drug A", theClient, 2.99, "allergy1,allergy2,allergy3" );
 
     @Test
