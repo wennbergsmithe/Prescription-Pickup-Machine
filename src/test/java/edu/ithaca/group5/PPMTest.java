@@ -161,8 +161,7 @@ class PPMTest {
                 assertEquals(result.name, currentName);
                 assertEquals(result.username, currentUsername);
                 assertEquals(result.password, currentPassword);
-                String[] temp = result.getClass().getName().toLowerCase().split("\\.");
-                assertEquals(temp[temp.length - 1], "client");
+                assertEquals(result.getType(), "client");
             }
             else {
                 fail("new user was not added to database");
@@ -200,8 +199,7 @@ class PPMTest {
                 assertEquals(result.name, currentName);
                 assertEquals(result.username, currentUsername);
                 assertEquals(result.password, currentPassword);
-                String[] temp = result.getClass().getName().toLowerCase().split("\\.");
-                assertEquals(temp[temp.length - 1], "client");
+                assertEquals(result.getType(), "client");
             }
             else {
                 fail("new user was not added to database");
@@ -220,8 +218,7 @@ class PPMTest {
                 assertEquals(result.name, currentName);
                 assertEquals(result.username, currentUsername);
                 assertEquals(result.password, currentPassword);
-                String[] temp = result.getClass().getName().toLowerCase().split("\\.");
-                assertEquals(temp[temp.length - 1], "employee");
+                assertEquals(result.getType(), "employee");
             }
             else {
                 fail("new user was not added to database");
@@ -240,8 +237,7 @@ class PPMTest {
                 assertEquals(result.name, currentName);
                 assertEquals(result.username, currentUsername);
                 assertEquals(result.password, currentPassword);
-                String[] temp = result.getClass().getName().toLowerCase().split("\\.");
-                assertEquals(temp[temp.length - 1], "pharmacist");
+                assertEquals(result.getType(), "pharmacist");
             }
             else {
                 fail("new user was not added to database");

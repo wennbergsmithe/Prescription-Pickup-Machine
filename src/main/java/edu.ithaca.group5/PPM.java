@@ -106,10 +106,7 @@ public class PPM {
         //Determine the type of the current active user
         String userType;
         if (activeUser != null) {
-            userType = activeUser.getClass().getName();
-            userType = userType.toLowerCase();
-            String[] splitType = userType.split("\\.");
-            userType = splitType[splitType.length - 1];
+            userType = activeUser.getType();
         }
         else {
             userType = "client";
@@ -156,28 +153,48 @@ public class PPM {
         return createdUser;
     }
 
+    private static void printBreak() {
+        System.out.println("----------------------------------------------------------");
+    }
 
+    private static void printCommands() {
+        printBreak();
+        System.out.println("Current Commands:");
+        printBreak();
+        System.out.println("General Commands:\n");
+        System.out.println("help - Displays this list of commands");
+        System.out.println("login - Log into an existing account");
+        System.out.println("logout - Log out of the current account");
+        System.out.println("exit - Ends the program");
+        printBreak();
+        System.out.println("Client Commands:\n");
+        System.out.println("pay - Pay for an order");
+        System.out.println("addfunds - Add funds to your account");
+        printBreak();
+        System.out.println("Pharmacist/Employee Commands:");
+        System.out.println("Keep in mind Employees can only operate on client accounts\n");
+        System.out.println("create - Creates a new account");
+        System.out.println("remove - Delete a user from the PPM's database");
+        System.out.println("unblock - Disable the lock on an account");
+
+    }
 
     public static void main(String[] args) {
         try {
             PPM ppm = new PPM(true);
+            ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test pharmacist", "testPharmacist", "password"));
             User user = ppm.login("testPharmacist", "password");
             Scanner console = new Scanner(System.in);
-            System.out.println("Welcome to the Prescription Pickup Machine!\n" +
-                    "Current Commands:\n" +
-                    "create - Creates a new account\n" +
-                    "login - Log into an existing account\n" +
-                    "logout - Log out of the current account\n" +
-                    "exit - Ends the program\n");
+            System.out.println("Welcome to the Prescription Pickup Machine!");
+            printCommands();
 
             String currentInput;
             boolean done = false;
             while (!done) {
-                System.out.println("----------------------------------------------------------");
+                printBreak();
                 if (ppm.activeUser != null) {
                     System.out.println("\nCurrently logged in as " + ppm.activeUser.name + "\n");
-                }
-                else {
+                } else {
                     System.out.println("\nNobody is currently logged in\n");
                 }
 
@@ -200,22 +217,23 @@ public class PPM {
                             User createdUser = ppm.createUser(name, username, password, type);
                             if (createdUser == null) {
                                 System.out.println("Error: you don't have permission to create that type of user!");
-                            }
-                            else {
+                            } else {
                                 System.out.println("Successfully created a new user with a name of '" + createdUser.name + "'!");
                             }
 
                         } catch (UsernameTakenException e) {
                             System.out.println("Error: the username '" + e.desiredName + "' is already taken");
                         }
-                    }
-                    else {
+                    } else {
                         System.out.println("Error: not an eligible account type");
                     }
                     //Add another line for neatness
                     System.out.println();
-                }
-                else if (currentInput.equals("login")) {
+                } else if (currentInput.equals("remove")) {
+                    System.out.println("Enter the username of the user you want to delete:");
+                    String username = console.nextLine();
+
+                } else if (currentInput.equals("login")) {
                     if (!ppm.isLoggedIn()) {
                         System.out.println("Enter a username:");
                         String username = console.nextLine();
@@ -227,13 +245,33 @@ public class PPM {
                             System.out.println("Successfully logged into " + newUser.name + "'s account!");
                             ppm.activeUser = newUser;
                         } else {
+                            User possibleUser = ppm.dbConnection.getUserByUsername(username);
+                            if (possibleUser != null) {
+                                if (possibleUser.isFrozen) {
+                                    System.out.println("This account has been locked due to excessive login attempts." +
+                                            " Contact your local employee for assistance.");
+                                }
+                            }
                             System.out.println("Error: could not complete the login");
                         }
                         //Add another line for neatness
                         System.out.println();
-                    }
-                    else {
+                    } else {
                         System.out.println("Log out of the current account before logging in!");
+                    }
+                } else if (currentInput.equals("unblock")) {
+                    if (ppm.activeUser != null && !ppm.activeUser.getType().equals("client")) {
+                        System.out.println("Enter the username of the account you want to unblock");
+                        String username = console.nextLine();
+                        User blockedUser = ppm.dbConnection.getUserByUsername(username);
+                        if (blockedUser.isFrozen) {
+                            ppm.dbConnection.unfreezeUser(blockedUser);
+                            System.out.println(username + "'s account has been unblocked.");
+                        } else {
+                            System.out.println("That user's account is not blocked!");
+                        }
+                    } else {
+                        System.out.println("You do not have permission to unblock accounts!");
                     }
                 } else if (currentInput.equals("logout")) {
                     User pastUser = ppm.logout();
@@ -246,6 +284,12 @@ public class PPM {
                 } else if (currentInput.equals("exit")) {
                     System.out.println("Exiting...");
                     done = true;
+                } else if (currentInput.equals("pay")) {
+
+                } else if (currentInput.equals("addfunds")) {
+
+                } else if (currentInput.equals("help")) {
+                    printCommands();
                 }
                 else {
                     System.out.println("Invalid Input!\n");
