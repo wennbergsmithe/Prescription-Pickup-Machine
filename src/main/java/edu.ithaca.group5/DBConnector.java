@@ -1,5 +1,7 @@
 package edu.ithaca.group5;
 
+import java.util.List;
+
 public interface DBConnector {
 
     /**
@@ -65,5 +67,12 @@ public interface DBConnector {
     void freezeUser(User user);
 
     void unfreezeUser(User user);
+
+
+    /**
+     * returns an array of orders fron the database
+     * @return array of orders
+     */
+    List<Order> getOrders();
 
 }

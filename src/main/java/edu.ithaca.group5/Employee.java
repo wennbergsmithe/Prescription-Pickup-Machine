@@ -1,5 +1,9 @@
 package edu.ithaca.group5;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class Employee extends User {
 
 
@@ -43,4 +47,20 @@ public class Employee extends User {
         connection.unfreezeUser(user);
     }
 
+
+
+    /**
+     * Prints out a list of current orders in the PPM database
+     */
+
+    public void viewOrders(PPM ppm){
+        List<Order> list = ppm.dbConnection.getOrders();
+
+        Iterator<Order> itr = list.iterator();
+
+        while (itr.hasNext()){
+            System.out.println(itr.next());
+            System.out.println("\n\n");
+        }
+    }
 }
