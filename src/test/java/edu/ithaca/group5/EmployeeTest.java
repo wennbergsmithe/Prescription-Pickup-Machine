@@ -58,7 +58,7 @@ public class EmployeeTest {
     void viewOrders() {
         try{
             PPM tester = new PPM(true);
-            Employee emp = new Employee(1,"empTest","un","pw");
+            Employee emp = new Employee(1,"empTest","un","pw", false, "none");
             emp.viewOrders(tester);
 
             //this method only prints orders to console and there is currently no way to load orders into the ppm to test

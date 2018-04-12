@@ -246,11 +246,13 @@ public class SQLConnector implements DBConnector {
                 boolean isVal = rslt.getBoolean("is_validated");
                 double price = rslt.getDouble("price");
                 String warnings = rslt.getString("warnings");
+                boolean isFrozen = rslt.getBoolean("isFrozen");
+                String allergies = rslt.getString("allergies");
 
                 ResultSet clientStuff = statement.executeQuery("SELECT id, name, username, password, type FROM user where id=" + clientId);
                 if(clientStuff.next()){
                     Client client = new Client(clientStuff.getLong("id"), clientStuff.getString("name"),
-                            clientStuff.getString("username"), clientStuff.getString("password"));
+                            clientStuff.getString("username"), clientStuff.getString("password"),isFrozen,allergies);
 
                     Order currentOrder = new Order(id,name,client,price,warnings);
                     orders.add(currentOrder);
