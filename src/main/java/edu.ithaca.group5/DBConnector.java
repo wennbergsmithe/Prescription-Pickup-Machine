@@ -92,4 +92,11 @@ public interface DBConnector {
 
     void unfreezeUser(User user);
 
+
+    /**
+     * returns an array of orders fron the database
+     * @return array of orders
+     */
+    List<Order> getOrders();
+
 }

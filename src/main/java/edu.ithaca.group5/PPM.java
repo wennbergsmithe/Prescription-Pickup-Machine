@@ -67,6 +67,7 @@ public class PPM {
         return pastUser;
     }
 
+
     /**
      * Determines if someone is currently logged into the ppm
      * @return true if someone is logged in, otherwise false

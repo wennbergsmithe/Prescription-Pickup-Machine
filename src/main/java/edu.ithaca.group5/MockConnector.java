@@ -98,6 +98,7 @@ public class MockConnector implements DBConnector {
         prescriptions = new ArrayList<>();
     }
 
+
     @Override
     public void freezeUser(User user) {
         for (User u : users) {
@@ -115,4 +116,8 @@ public class MockConnector implements DBConnector {
             }
         }
     }
+
+    @Override
+    public List<Order> getOrders() {return prescriptions;}
+
 }

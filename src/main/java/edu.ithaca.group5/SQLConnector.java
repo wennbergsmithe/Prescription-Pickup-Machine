@@ -231,4 +231,35 @@ public class SQLConnector implements DBConnector {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public List<Order> getOrders() {
+        List<Order> orders = new ArrayList<>();
+
+        try{
+            Statement statement = connection.createStatement();
+            ResultSet rslt = statement.executeQuery("SELECT * FROM prescription");
+            while (rslt.next()){
+                long id = rslt.getLong("id");
+                String name = rslt.getString("name");
+                long clientId = rslt.getLong("client_id");
+                boolean isVal = rslt.getBoolean("is_validated");
+                double price = rslt.getDouble("price");
+                String warnings = rslt.getString("warnings");
+
+                ResultSet clientStuff = statement.executeQuery("SELECT id, name, username, password, type FROM user where id=" + clientId);
+                if(clientStuff.next()){
+                    Client client = new Client(clientStuff.getLong("id"), clientStuff.getString("name"),
+                            clientStuff.getString("username"), clientStuff.getString("password"));
+
+                    Order currentOrder = new Order(id,name,client,price,warnings);
+                    orders.add(currentOrder);
+                }
+            }
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return orders;
+    }
 }
