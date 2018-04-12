@@ -1,6 +1,8 @@
 package edu.ithaca.group5;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SQLConnector implements DBConnector {
     Connection connection;
@@ -46,6 +48,11 @@ public class SQLConnector implements DBConnector {
         }
     }
 
+    @Override
+    public Order addOrder(String inName, String username, double inPrice, String inWarnings) {
+        return null;
+    }
+
     public boolean isInDB(Client toCheck){
         boolean isThere;
         try {
@@ -67,7 +74,7 @@ public class SQLConnector implements DBConnector {
         }
     }
 
-
+    @Override
     public Client removeClient(Client clientToRemove){
         try {
             Statement statement = connection.createStatement();
@@ -166,6 +173,18 @@ public class SQLConnector implements DBConnector {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    @Override
+    public List<Order> getOrdersByUsername(String username) {
+        List<Order> orders = new ArrayList<Order>();
+
+        return orders;
+    }
+
+    @Override
+    public Order getOrderByNameAndUsername(String orderName, String username) {
+        return null;
     }
 
     @Override

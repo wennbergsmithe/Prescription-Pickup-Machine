@@ -1,9 +1,7 @@
 package edu.ithaca.group5;
 
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 class UsernameTakenException extends Exception {
     String desiredName;
@@ -169,11 +167,13 @@ public class PPM {
         printBreak();
         System.out.println("Client Commands:\n");
         System.out.println("pay - Pay for an order");
+        System.out.println("listorders - List your current orders");
         System.out.println("addfunds - Add funds to your account");
         printBreak();
         System.out.println("Pharmacist/Employee Commands:");
         System.out.println("Keep in mind Employees can only operate on client accounts\n");
         System.out.println("create - Creates a new account");
+        System.out.println("addorder - Add a new order to a client's account");
         System.out.println("remove - Delete a user from the PPM's database");
         System.out.println("unblock - Disable the lock on an account");
 
@@ -183,7 +183,7 @@ public class PPM {
         try {
             PPM ppm = new PPM(true);
             ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test pharmacist", "testPharmacist", "password", ""));
-            User user = ppm.login("testPharmacist", "password");
+            ppm.login("testPharmacist", "password");
             Scanner console = new Scanner(System.in);
             System.out.println("Welcome to the Prescription Pickup Machine!");
             printCommands();
@@ -230,8 +230,38 @@ public class PPM {
                     //Add another line for neatness
                     System.out.println();
                 } else if (currentInput.equals("remove")) {
-                    System.out.println("Enter the username of the user you want to delete:");
-                    String username = console.nextLine();
+                    if (ppm.activeUser != null) {
+                        if (ppm.activeUser.getType().equals("pharmacist")) {
+                            System.out.println("Enter the username of the user you want to delete:");
+                            String username = console.nextLine();
+
+                            User user = ppm.dbConnection.getUserByUsername(username);
+                            if (user != null) {
+                                Client client = new Client(user.id, user.name, user.username, user.password, user.allergies);
+                                System.out.println("Are you sure? (Y/N)");
+                                String prompt = null;
+                                while (prompt == null) {
+                                    prompt = console.nextLine();
+                                    if (prompt.toLowerCase().equals("y")) {
+                                        System.out.println("Deleting " + username + "'s account...");
+                                        ppm.dbConnection.removeClient(client);
+                                        System.out.println("Successfully deleted " + username + "'s account");
+                                    } else if (prompt.toLowerCase().equals("n")) {
+                                        prompt = "escape";
+                                    } else {
+                                        System.out.println("Bad input: try again");
+                                        prompt = null;
+                                    }
+                                }
+                            } else {
+                                System.out.println("No user exists with a username of " + username);
+                            }
+                        } else {
+                            System.out.println("You do not have permission to delete users!");
+                        }
+                    } else {
+                        System.out.println("Please log in before attempting to delete a user");
+                    }
 
                 } else if (currentInput.equals("login")) {
                     if (!ppm.isLoggedIn()) {
@@ -246,13 +276,12 @@ public class PPM {
                             ppm.activeUser = newUser;
                         } else {
                             User possibleUser = ppm.dbConnection.getUserByUsername(username);
-                            if (possibleUser != null) {
-                                if (possibleUser.isFrozen) {
-                                    System.out.println("This account has been locked due to excessive login attempts." +
-                                            " Contact your local employee for assistance.");
-                                }
+                            if (possibleUser != null && possibleUser.isFrozen) {
+                                System.out.println("This account has been locked due to excessive login attempts." +
+                                        " Contact your local employee for assistance.");
+                            } else {
+                                System.out.println("Error: could not complete the login");
                             }
-                            System.out.println("Error: could not complete the login");
                         }
                         //Add another line for neatness
                         System.out.println();
@@ -277,17 +306,109 @@ public class PPM {
                     User pastUser = ppm.logout();
                     if (pastUser != null) {
                         System.out.println(pastUser.name + " has been logged out.");
-                    }
-                    else {
+                    } else {
                         System.out.println("Cannot log someone out if nobody is logged in!");
                     }
                 } else if (currentInput.equals("exit")) {
                     System.out.println("Exiting...");
                     done = true;
+                } else if (currentInput.equals("addorder")) {
+                    System.out.println("Enter the username of the client who will receive the order:");
+                    String username = console.nextLine();
+                    User user = ppm.dbConnection.getUserByUsername(username);
+                    if (user != null) {
+                        if (user.getType().equals("client")) {
+                            Client client = new Client(user.id, user.name, user.username, user.password, user.isFrozen, user.allergies);
+                            System.out.println("What is the name of the order?");
+                            String inName = console.nextLine();
+                            System.out.println("What is the price of this order?");
+                            String inPrice = console.nextLine();
+                            System.out.println("Enter any warnings for this order, or 'none' if there are none:");
+                            String inWarnings = console.nextLine();
+                            if (inWarnings.toLowerCase().equals("none")) {
+                                inWarnings = "";
+                            }
+
+                            Order tempOrder = new Order(-1, "", client, 0, inWarnings);
+                            if (tempOrder.checkAllergies()) {
+                                System.out.println("There's an allergy confliction with this medication!\n" +
+                                        "Do you still want to give this order to the client?");
+                                String prompt = null;
+                                while (prompt == null) {
+                                    prompt = console.nextLine();
+                                    if (prompt.toLowerCase().equals("y")) {
+                                        Order order = ppm.dbConnection.addOrder(inName, client.username, Double.parseDouble(inPrice), inWarnings);
+                                        client.orders.add(order);
+                                        System.out.println("Successfully gave the order to the client");
+                                    } else if (prompt.toLowerCase().equals("n")) {
+                                        prompt = "escape";
+                                    } else {
+                                        System.out.println("Bad input: try again");
+                                        prompt = null;
+                                    }
+                                }
+                            } else {
+                                Order order = ppm.dbConnection.addOrder(inName, client.username, Double.parseDouble(inPrice), inWarnings);
+                                client.orders.add(order);
+                                System.out.println("Successfully gave the order to the client");
+                            }
+                        } else {
+                            System.out.println("That user is not a client!");
+                        }
+                    } else {
+                        System.out.println("No user exists with username " + username);
+                    }
+                    System.out.println("");
+                } else if (currentInput.equals("listorders")) {
+                    if (ppm.activeUser != null) {
+                        if (ppm.activeUser.getType().equals("client")) {
+                            List<Order> orders = ppm.dbConnection.getOrdersByUsername(ppm.activeUser.username);
+                            if (orders.size() != 0) {
+                                System.out.println("Your current orders:");
+                                for (int i = 0; i < orders.size(); i++) {
+                                    System.out.println(orders.get(i));
+                                }
+                            } else {
+                                System.out.println("You don't have any available orders!");
+                            }
+                        } else {
+                            System.out.println("An admin does not have orders!");
+                        }
+                    } else {
+                        System.out.println("You don't have any orders because you're not logged in!");
+                    }
                 } else if (currentInput.equals("pay")) {
+                    if (ppm.activeUser != null) {
+                        if (ppm.activeUser.getType().equals("client")) {
+                            System.out.println("Enter the name of the order you want to pay for:");
+                            String orderName = console.nextLine();
+                            Order order = ppm.dbConnection.getOrderByNameAndUsername(orderName, ppm.activeUser.username);
+                            if (order != null) {
+                                System.out.println("How will you pay for the order?\n" +
+                                        "Options: credit, debit, balance (account balance), cash");
+                                String paymentMethod = console.nextLine();
 
+                                order.payOrder(paymentMethod, order.price);
+                                System.out.println("The order has been successfully paid off!");
+                            } else {
+                                System.out.println("No order named " + orderName + " exists for the user named " + ppm.activeUser.username);
+                            }
+                        } else {
+                            System.out.println("Only clients can pay for orders!");
+                        }
+                    } else {
+                        System.out.println("Log in before trying to pay for an order!");
+                    }
                 } else if (currentInput.equals("addfunds")) {
+                    if (ppm.activeUser != null) {
+                        if (ppm.activeUser.getType().equals("client")) {
 
+                        } else {
+                            System.out.println("There's no reason for an admin to add funds to their account!");
+                        }
+                    } else {
+                        System.out.println("Log in before trying to add to your account's balance!");
+                    }
                 } else if (currentInput.equals("help")) {
                     printCommands();
                 }

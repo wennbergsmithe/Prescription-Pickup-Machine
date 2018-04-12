@@ -8,6 +8,7 @@ public class Client extends User {
 
     public Client(long id, String name, String username, String password, boolean isFrozen, String allergies) {
         super(id, name, username, password, isFrozen,allergies);
+        orders = new ArrayList<Order>();
     }
 
     public Client(long id, String name, String username, String password, String allergies) {

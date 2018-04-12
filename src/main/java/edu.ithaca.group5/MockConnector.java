@@ -27,6 +27,12 @@ public class MockConnector implements DBConnector {
         users.add(client);
     }
 
+    @Override
+    public Order addOrder(String inName, String username, double inPrice, String inWarnings) {
+        return null;
+    }
+
+    @Override
     public Client removeClient(Client clientToRemove){
         users.remove(clientToRemove);
         return clientToRemove;
@@ -67,6 +73,18 @@ public class MockConnector implements DBConnector {
             id++;
         }
         return -1;
+    }
+
+    @Override
+    public List<Order> getOrdersByUsername(String username) {
+        List<Order> orders = new ArrayList<Order>();
+
+        return orders;
+    }
+
+    @Override
+    public Order getOrderByNameAndUsername(String orderName, String username) {
+        return null;
     }
 
     @Override
