@@ -3,12 +3,12 @@ package edu.ithaca.group5;
 public class Employee extends User {
 
 
-    public Employee(long id, String name, String username, String password, boolean isFrozen) {
-        super(id, name, username, password, isFrozen);
+    public Employee(long id, String name, String username, String password, boolean isFrozen, String allergies) {
+        super(id, name, username, password, isFrozen,allergies);
     }
 
-    public Employee(long id, String name, String username, String password) {
-        this(id, name, username, password, false);
+    public Employee(long id, String name, String username, String password,String allergies) {
+        this(id, name, username, password, false,allergies);
     }
 
     /**

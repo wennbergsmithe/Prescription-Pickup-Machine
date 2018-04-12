@@ -15,7 +15,7 @@ public class SQLConnector implements DBConnector {
         try {
             Statement statement = connection.createStatement();
             statement.execute("INSERT INTO user (name, username, password, type, isFrozen) VALUES ('" + employee.name + "', '" +
-                    employee.username + "', '" + employee.password + "', " + "'employee', " + employee.isFrozen +  ")");
+                    employee.username + "', '" + employee.password + "', " + "'employee', " + employee.isFrozen + "', '" + employee.allergies +  ")");
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -27,7 +27,7 @@ public class SQLConnector implements DBConnector {
         try {
             Statement statement = connection.createStatement();
             statement.execute("INSERT INTO user (name, username, password, type, isFrozen) VALUES ('" + pharmacist.name + "', '" +
-                    pharmacist.username + "', '" + pharmacist.password + "', " + "'pharmacist', " + pharmacist.isFrozen +  ")");
+                    pharmacist.username + "', '" + pharmacist.password + "', " + "'pharmacist', " + pharmacist.isFrozen + "', '" + pharmacist.allergies +  ")");
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -39,7 +39,7 @@ public class SQLConnector implements DBConnector {
         try {
             Statement statement = connection.createStatement();
             statement.execute("INSERT INTO user (name, username, password, type, isFrozen) VALUES ('" + client.name + "', '" +
-                    client.username + "', '" + client.password + "', " + "'client', " + client.isFrozen +  ")");
+                    client.username + "', '" + client.password + "', " + "'client', " + client.isFrozen + "', '" + client.allergies +  ")");
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -93,15 +93,15 @@ public class SQLConnector implements DBConnector {
                 switch (results.getString("type")) {
                     case "client":      user = new Client(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"));
+                            results.getBoolean("isFrozen"),results.getString("allergies"));
                         break;
                     case "employee":    user = new Employee(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"));
+                            results.getBoolean("isFrozen"), results.getString("allergies"));
                         break;
                     case "pharmacist":  user = new Pharmacist(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"));
+                            results.getBoolean("isFrozen"), results.getString("allergies"));
                         break;
                     default:            return null;
                 }
@@ -128,15 +128,15 @@ public class SQLConnector implements DBConnector {
                 switch (results.getString("type")) {
                     case "client":      user = new Client(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"));
+                            results.getBoolean("isFrozen"),results.getString("allergies"));
                         break;
                     case "employee":    user = new Employee(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"));
+                            results.getBoolean("isFrozen"), results.getString("allergies"));
                         break;
                     case "pharmacist":  user = new Pharmacist(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"));
+                            results.getBoolean("isFrozen"), results.getString("allergies"));
                         break;
                     default:            return null;
                 }

@@ -26,7 +26,7 @@ class PPMTest {
         assertNull(ppm.login("test", "test"));
 
         // Client
-        ppm.dbConnection.addClient(new Client(-1, "test", "user", "pass", false));
+        ppm.dbConnection.addClient(new Client(-1, "test", "user", "pass", false,""));
         User user = ppm.login("user", "pass");
         assertEquals("test", user.name);
         assertEquals("user", user.username);
@@ -35,7 +35,7 @@ class PPMTest {
         assertEquals(Client.class, user.getClass());
 
         // Employee
-        ppm.dbConnection.addEmployee(new Employee(-1, "test2", "user2", "pass2", false));
+        ppm.dbConnection.addEmployee(new Employee(-1, "test2", "user2", "pass2", false, ""));
         user = ppm.login("user2", "pass2");
         assertEquals("test2", user.name);
         assertEquals("user2", user.username);
@@ -44,7 +44,7 @@ class PPMTest {
         assertEquals(Employee.class, user.getClass());
 
         // Pharmacist
-        ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test3", "user3", "pass3", false));
+        ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test3", "user3", "pass3", false, ""));
         user = ppm.login("user3", "pass3");
         assertEquals("test3", user.name);
         assertEquals("user3", user.username);
@@ -52,7 +52,7 @@ class PPMTest {
         assertFalse(user.isFrozen);
         assertEquals(Pharmacist.class, user.getClass());
 
-        ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test4", "user4", "pass4", true));
+        ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test4", "user4", "pass4", true, ""));
         user = ppm.login("user4", "pass4");
         assertNull(user);
 
@@ -60,7 +60,7 @@ class PPMTest {
 
     @Test
     public void maxLoginAttempts() {
-        ppm.dbConnection.addEmployee(new Employee(-1, "test", "username", "pass", false));
+        ppm.dbConnection.addEmployee(new Employee(-1, "test", "username", "pass", false, ""));
         for (int i = 0; i < ppm.MAX_LOGIN_ATTEMPTS; i++) {
             User user = ppm.dbConnection.getUserByUsername("username");
             assertFalse(user.isFrozen);
