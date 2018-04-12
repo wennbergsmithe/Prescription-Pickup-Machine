@@ -131,11 +131,15 @@ public class Order {
      */
     public boolean checkAllergies(){
         String[] clientAller = client.allergies.split(",");
+
         int maxSize = clientAller.length;
 
         for(int i = 0; i < maxSize; i++){
-            if (warnings.contains(clientAller[i])){
-                return true;
+            //Make sure the split function didn't just return an empty string (in the case of there not being any allergies)
+            if (!clientAller[i].equals("")) {
+                if (warnings.contains(clientAller[i])) {
+                    return true;
+                }
             }
         }
         return false;
