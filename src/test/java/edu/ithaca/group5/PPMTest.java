@@ -97,7 +97,7 @@ class PPMTest {
 
         //Creating a user who already exists
         //Setup active PPM user
-        tempP = new Pharmacist(-1, "thePharmacist", "pharmacistmain", "tempP0");
+        tempP = new Pharmacist(-1, "thePharmacist", "pharmacistmain", "tempP0", "");
         ppm.dbConnection.addPharmacist(tempP);
         ppm.activeUser = tempP;
         //ppm.login("pharmacistmain", "tempP0");
@@ -120,7 +120,7 @@ class PPMTest {
         //Different combinations of different types of active users trying to create different types of users
         try {
             //Client as Active User
-            tempC = new Client(-1, "theClient", "clientmain", "tempC0");
+            tempC = new Client(-1, "theClient", "clientmain", "tempC0", "");
             ppm.activeUser = tempC;
             //CANNOT create a Client
             currentName = "CMadeByC";
@@ -146,7 +146,7 @@ class PPMTest {
 
 
             //Employee as Active User
-            tempE = new Employee(-1, "theEmployee", "employeemain", "tempE0");
+            tempE = new Employee(-1, "theEmployee", "employeemain", "tempE0", "");
             ppm.activeUser = tempE;
             //CAN create a Client
             currentName = "CMadeByE";
@@ -184,7 +184,7 @@ class PPMTest {
 
 
             //Pharmacist as Active User
-            tempP = new Pharmacist(-1, "thePharmacist", "pharmacistmain", "tempP0");
+            tempP = new Pharmacist(-1, "thePharmacist", "pharmacistmain", "tempP0", "");
             ppm.activeUser = tempP;
             //CAN create a Client
             currentName = "CMadeByP";
