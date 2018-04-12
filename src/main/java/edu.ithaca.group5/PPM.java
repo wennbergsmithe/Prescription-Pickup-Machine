@@ -186,15 +186,23 @@ public class PPM {
             ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test pharmacist", "testPharmacist", "password", ""));
             ppm.login("testPharmacist", "password");
             Scanner console = new Scanner(System.in);
+
             System.out.println("Welcome to the Prescription Pickup Machine!");
-            printCommands();
+            System.out.println("Type 'help' for a list of commands");
+
 
             String currentInput;
             boolean done = false;
             while (!done) {
                 printBreak();
                 if (ppm.activeUser != null) {
-                    System.out.println("\nCurrently logged in as " + ppm.activeUser.name + "\n");
+                    System.out.println("\nCurrently logged in as " + ppm.activeUser.name);
+                    if (ppm.activeUser.getType().equals("client")) {
+                        System.out.println("Your account balance: $" + ppm.activeUser.balance);
+                    } else {
+                        System.out.println("You have administrative privileges");
+                    }
+                    System.out.println();
                 } else {
                     System.out.println("\nNobody is currently logged in\n");
                 }
@@ -403,7 +411,19 @@ public class PPM {
                 } else if (currentInput.equals("addfunds")) {
                     if (ppm.activeUser != null) {
                         if (ppm.activeUser.getType().equals("client")) {
+                            System.out.println("How much are you adding to your account?");
+                            String amountIn = console.nextLine();
+                            System.out.println("How will you add funds?\n" +
+                                    "Options: credit, debit, balance (account balance), cash");
+                            String paymentMethod = console.nextLine();
 
+                            double amount = Double.parseDouble(amountIn);
+                            if (amount >= 0) {
+                                ppm.activeUser.balance += amount;
+                                System.out.println("Successfully added funds of $" + amountIn + " to your account");
+                            } else {
+                                System.out.println("You cannot subtract funds from your account!");
+                            }
                         } else {
                             System.out.println("There's no reason for an admin to add funds to their account!");
                         }
