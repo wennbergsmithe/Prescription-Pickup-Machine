@@ -1,5 +1,6 @@
 package edu.ithaca.group5;
 
+import javax.swing.plaf.nimbus.State;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -179,11 +180,75 @@ public class SQLConnector implements DBConnector {
     public List<Order> getOrdersByUsername(String username) {
         List<Order> orders = new ArrayList<Order>();
 
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+            int id = getIDByUsername(username);
+
+            ResultSet rslt = statement.executeQuery("SELECT * FROM prescription WHERE client_id=" + id);
+            while(rslt.next()){
+                long orderId = rslt.getLong("id");
+                String name = rslt.getString("name");
+                long clientId = rslt.getLong("client_id");
+                boolean isVal = rslt.getBoolean("is_validated");
+                double price = rslt.getDouble("price");
+                String warnings = rslt.getString("warnings");
+                boolean isFrozen = rslt.getBoolean("isFrozen");
+                String allergies = rslt.getString("allergies");
+
+                ResultSet clientStuff = statement.executeQuery("SELECT id, name, username, password, type FROM user where id=" + clientId);
+                if(clientStuff.next()){
+                    Client client = new Client(clientStuff.getLong("id"), clientStuff.getString("name"),
+                            clientStuff.getString("username"), clientStuff.getString("password"),isFrozen,allergies);
+
+                    Order currentOrder = new Order(id,name,client,price,warnings);
+                    orders.add(currentOrder);
+                }
+            }
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return orders;
     }
 
     @Override
     public Order getOrderByNameAndUsername(String orderName, String username) {
+
+        Statement statement = null;
+
+        try{
+            statement = connection.createStatement();
+            int id = getIDByUsername(username);
+
+            if(id != -1){
+                ResultSet resultSet = statement.executeQuery("SELECT 1 FROM prescription WHERE client_id=" + id + " AND name='" + orderName + "'");
+
+
+                ResultSet clientStuff = statement.executeQuery("SELECT * FROM user where id=" + id);
+                Client client;
+
+                if(clientStuff.next()) {
+                    client = new Client(clientStuff.getLong("id"), clientStuff.getString("name"),
+                            clientStuff.getString("username"), clientStuff.getString("password"),
+                            clientStuff.getBoolean("isFrozen"), clientStuff.getString("allergies"));
+                }else{
+                    return null;
+                }
+                if (resultSet.next()){
+                    int orderId = resultSet.getInt("id");
+                    String name = resultSet.getString("name");
+                    double price = resultSet.getDouble("price");
+                    String warnings = resultSet.getString("warnings");
+                    Order toReturn = new Order(orderId,name,client,price,warnings);
+                    return toReturn;
+                }
+            }else{
+                return null;
+            }
+        }catch (java.sql.SQLException e){
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -264,4 +329,6 @@ public class SQLConnector implements DBConnector {
         }
         return orders;
     }
+
+
 }
