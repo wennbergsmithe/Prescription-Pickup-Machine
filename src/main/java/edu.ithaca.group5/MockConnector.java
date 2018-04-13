@@ -2,6 +2,8 @@ package edu.ithaca.group5;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MockConnector implements DBConnector {
     List<User> users;
@@ -43,10 +45,17 @@ public class MockConnector implements DBConnector {
     }
 
 
+    private static int iterations(int cost)
+    {
+        if ((cost < 0) || (cost > 30))
+            throw new IllegalArgumentException("cost: " + cost);
+        return 1 << cost;
+    }
+
     @Override
     public User getUserByUsernameAndPassword(String username, String password) {
         for (User user : users) {
-            if (user.username.equals(username) && user.password.equals(password)) {
+            if (user.username.equals(username) && user.isPassword(password)) {
                 return user;
             }
         }

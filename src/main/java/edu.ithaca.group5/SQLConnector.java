@@ -17,8 +17,8 @@ public class SQLConnector implements DBConnector {
     public void addEmployee(Employee employee) {
         try {
             Statement statement = connection.createStatement();
-            statement.execute("INSERT INTO user (name, username, password, type, isFrozen) VALUES ('" + employee.name + "', '" +
-                    employee.username + "', '" + employee.password + "', " + "'employee', " + employee.isFrozen + "', '" + employee.allergies +  ")");
+            statement.execute("INSERT INTO user (name, username, password, type, isFrozen, salt, allergies) VALUES ('" + employee.name + "', '" +
+                    employee.username + "', '" + employee.password + "', " + "'employee', " + employee.isFrozen +  ", '" + employee.passwordSalt + "', '" + employee.allergies + "')");
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -29,8 +29,8 @@ public class SQLConnector implements DBConnector {
     public void addPharmacist(Pharmacist pharmacist) {
         try {
             Statement statement = connection.createStatement();
-            statement.execute("INSERT INTO user (name, username, password, type, isFrozen) VALUES ('" + pharmacist.name + "', '" +
-                    pharmacist.username + "', '" + pharmacist.password + "', " + "'pharmacist', " + pharmacist.isFrozen + "', '" + pharmacist.allergies +  ")");
+            statement.execute("INSERT INTO user (name, username, password, type, isFrozen, salt, allergies) VALUES ('" + pharmacist.name + "', '" +
+                    pharmacist.username + "', '" + pharmacist.password + "', " + "'pharmacist', " + pharmacist.isFrozen +  ", '" + pharmacist.passwordSalt + "', '" + pharmacist.allergies + "')");
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -41,8 +41,8 @@ public class SQLConnector implements DBConnector {
     public void addClient(Client client) {
         try {
             Statement statement = connection.createStatement();
-            statement.execute("INSERT INTO user (name, username, password, type, isFrozen) VALUES ('" + client.name + "', '" +
-                    client.username + "', '" + client.password + "', " + "'client', " + client.isFrozen + "', '" + client.allergies +  ")");
+            statement.execute("INSERT INTO user (name, username, password, type, isFrozen, salt, allergies) VALUES ('" + client.name + "', '" +
+                    client.username + "', '" + client.password + "', " + "'client', " + client.isFrozen +  ", '" + client.passwordSalt + "', '" + client.allergies + "')");
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -92,37 +92,11 @@ public class SQLConnector implements DBConnector {
 
     @Override
     public User getUserByUsernameAndPassword(String username, String password) {
-        User user;
-        try {
-            Statement statement = connection.createStatement();
-            ResultSet results = statement.executeQuery("SELECT id, name, username, password, type, isFrozen FROM user where username='" +
-                    username + "' and password='" + password + "'");
-            if (results.next()) {
-                switch (results.getString("type")) {
-                    case "client":      user = new Client(results.getLong("id"), results.getString("name"),
-                            results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"),results.getString("allergies"));
-                        break;
-                    case "employee":    user = new Employee(results.getLong("id"), results.getString("name"),
-                            results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"), results.getString("allergies"));
-                        break;
-                    case "pharmacist":  user = new Pharmacist(results.getLong("id"), results.getString("name"),
-                            results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"), results.getString("allergies"));
-                        break;
-                    default:            return null;
-                }
-                statement.close();
-                return user;
-
-            } else {
-                return null;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
+        User user = getUserByUsername(username);
+        if (user != null && user.isPassword(password)) {
+            return user;
         }
+        return null;
     }
 
     @Override
@@ -130,21 +104,21 @@ public class SQLConnector implements DBConnector {
         User user;
         try {
             Statement statement = connection.createStatement();
-            ResultSet results = statement.executeQuery("SELECT id, name, username, password, type, isFrozen FROM user where username='" +
+            ResultSet results = statement.executeQuery("SELECT * FROM user where username='" +
                     username + "'");
             if (results.next()) {
                 switch (results.getString("type")) {
                     case "client":      user = new Client(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"),results.getString("allergies"));
+                            results.getBoolean("isFrozen"), results.getString("salt"), results.getString("allergies"));
                         break;
                     case "employee":    user = new Employee(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"), results.getString("allergies"));
+                            results.getBoolean("isFrozen"), results.getString("salt"), results.getString("allergies"));
                         break;
                     case "pharmacist":  user = new Pharmacist(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"), results.getString("allergies"));
+                            results.getBoolean("isFrozen"), results.getString("salt"), results.getString("allergies"));
                         break;
                     default:            return null;
                 }
@@ -166,10 +140,12 @@ public class SQLConnector implements DBConnector {
             Statement statement = connection.createStatement();
             ResultSet results = statement.executeQuery("SELECT id, name, username, password, type FROM user where username='" +
                     username + "'");
-            statement.close();
+
 
             results.next();
-            return results.getRow();
+            int row = results.getRow();
+            statement.close();
+            return row;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -193,13 +169,13 @@ public class SQLConnector implements DBConnector {
                 boolean isVal = rslt.getBoolean("is_validated");
                 double price = rslt.getDouble("price");
                 String warnings = rslt.getString("warnings");
-                boolean isFrozen = rslt.getBoolean("isFrozen");
-                String allergies = rslt.getString("allergies");
 
-                ResultSet clientStuff = statement.executeQuery("SELECT id, name, username, password, type FROM user where id=" + clientId);
+                ResultSet clientStuff = statement.executeQuery("SELECT * FROM user where id=" + clientId);
                 if(clientStuff.next()){
                     Client client = new Client(clientStuff.getLong("id"), clientStuff.getString("name"),
-                            clientStuff.getString("username"), clientStuff.getString("password"),isFrozen,allergies);
+                            clientStuff.getString("username"), clientStuff.getString("password"),
+                            clientStuff.getBoolean("isFrozen"),clientStuff.getString("salt"),
+                            clientStuff.getString("allergies"));
 
                     Order currentOrder = new Order(id,name,client,price,warnings);
                     orders.add(currentOrder);
@@ -231,8 +207,10 @@ public class SQLConnector implements DBConnector {
                 if(clientStuff.next()) {
                     client = new Client(clientStuff.getLong("id"), clientStuff.getString("name"),
                             clientStuff.getString("username"), clientStuff.getString("password"),
-                            clientStuff.getBoolean("isFrozen"), clientStuff.getString("allergies"));
+                            clientStuff.getBoolean("isFrozen"),clientStuff.getString("salt"),
+                            clientStuff.getString("allergies"));
                 }else{
+                    statement.close();
                     return null;
                 }
                 if (resultSet.next()){
@@ -241,9 +219,11 @@ public class SQLConnector implements DBConnector {
                     double price = resultSet.getDouble("price");
                     String warnings = resultSet.getString("warnings");
                     Order toReturn = new Order(orderId,name,client,price,warnings);
+                    statement.close();
                     return toReturn;
                 }
             }else{
+                statement.close();
                 return null;
             }
         }catch (java.sql.SQLException e){
@@ -282,6 +262,7 @@ public class SQLConnector implements DBConnector {
         try {
             Statement statement = connection.createStatement();
             statement.execute("UPDATE user SET isFrozen = TRUE where id = " + user.id);
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -292,6 +273,7 @@ public class SQLConnector implements DBConnector {
         try {
             Statement statement = connection.createStatement();
             statement.execute("UPDATE user SET isFrozen = FALSE where id = " + user.id);
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -311,18 +293,18 @@ public class SQLConnector implements DBConnector {
                 boolean isVal = rslt.getBoolean("is_validated");
                 double price = rslt.getDouble("price");
                 String warnings = rslt.getString("warnings");
-                boolean isFrozen = rslt.getBoolean("isFrozen");
-                String allergies = rslt.getString("allergies");
 
                 ResultSet clientStuff = statement.executeQuery("SELECT id, name, username, password, type FROM user where id=" + clientId);
                 if(clientStuff.next()){
                     Client client = new Client(clientStuff.getLong("id"), clientStuff.getString("name"),
-                            clientStuff.getString("username"), clientStuff.getString("password"),isFrozen,allergies);
-
+                            clientStuff.getString("username"), clientStuff.getString("password"),
+                            clientStuff.getBoolean("isFrozen"),clientStuff.getString("salt"),
+                            clientStuff.getString("allergies"));
                     Order currentOrder = new Order(id,name,client,price,warnings);
                     orders.add(currentOrder);
                 }
             }
+            statement.close();
 
         }catch (SQLException e){
             e.printStackTrace();
