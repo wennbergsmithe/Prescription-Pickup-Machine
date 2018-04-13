@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,7 +21,7 @@ public class EmployeeTest {
 
     @Test
     public void unfreezeTest() {
-        connection.addClient(new Client(1, "test", "user", "pass", true));
+        connection.addClient(new Client(1, "test", "user", "pass", true, "Allergy1"));
         Employee employee = new Employee(2, "emp", "user2", "pass");
         User user = connection.getUserByUsername("user");
         assertTrue(user.isFrozen);
@@ -50,6 +51,24 @@ public class EmployeeTest {
         }catch (java.sql.SQLException e){
             e.printStackTrace();
         }
+
+    }
+
+    @Test
+    void viewOrders() {
+        try{
+            PPM tester = new PPM(true);
+            Employee emp = new Employee(1,"empTest","un","pw", false, "none");
+            emp.viewOrders(tester);
+
+            //this method only prints orders to console and there is currently no way to load orders into the ppm to test
+
+
+        }catch(java.sql.SQLException e){
+            e.printStackTrace();
+        }
+
+
 
     }
 }

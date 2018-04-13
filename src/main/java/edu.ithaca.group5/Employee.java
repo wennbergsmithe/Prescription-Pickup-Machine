@@ -1,5 +1,9 @@
 package edu.ithaca.group5;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class Employee extends User {
 
 
@@ -11,8 +15,12 @@ public class Employee extends User {
         this(id, name, username, password, false);
     }
 
-    public Employee(long id, String name, String username, String password, boolean isFrozen, String salt) {
-        super(id, name, username, password, isFrozen, salt);
+    public Employee(long id, String name, String username, String password, boolean isFrozen, String salt, String allergies) {
+        super(id, name, username, password, isFrozen, salt, allergies);
+    }
+
+    public Employee(long id, String name, String username, String password, boolean isFrozen, String allergies) {
+        super(id, name, username, password, isFrozen, allergies);
     }
 
     /**
@@ -47,4 +55,20 @@ public class Employee extends User {
         connection.unfreezeUser(user);
     }
 
+
+
+    /**
+     * Prints out a list of current orders in the PPM database
+     */
+
+    public void viewOrders(PPM ppm){
+        List<Order> list = ppm.dbConnection.getOrders();
+
+        Iterator<Order> itr = list.iterator();
+
+        while (itr.hasNext()){
+            System.out.println(itr.next());
+            System.out.println("\n\n");
+        }
+    }
 }

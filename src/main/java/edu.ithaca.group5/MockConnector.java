@@ -29,6 +29,12 @@ public class MockConnector implements DBConnector {
         users.add(client);
     }
 
+    @Override
+    public Order addOrder(String inName, String username, double inPrice, String inWarnings) {
+        return null;
+    }
+
+    @Override
     public Client removeClient(Client clientToRemove){
         users.remove(clientToRemove);
         return clientToRemove;
@@ -67,6 +73,39 @@ public class MockConnector implements DBConnector {
     }
 
     @Override
+    public int getIDByUsername(String username) {
+        int id = 0;
+        for (User user : users) {
+            if (user.username.equals(username)) {
+                return id;
+            }
+            id++;
+        }
+        return -1;
+    }
+
+    @Override
+    public List<Order> getOrdersByUsername(String username) {
+        List<Order> orders = new ArrayList<Order>();
+        for(Order order : prescriptions){
+            if(order.client.username.equals(username)){
+                orders.add(order);
+            }
+        }
+        return orders;
+    }
+
+    @Override
+    public Order getOrderByNameAndUsername(String orderName, String username){
+        for(Order order : prescriptions){
+            if(order.client.username.equals(username) && order.name.equals(orderName)){
+                return order;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public void emptyUserTable() {
         users = new ArrayList<>();
 
@@ -76,6 +115,7 @@ public class MockConnector implements DBConnector {
     public void emptyOrderTable() {
         prescriptions = new ArrayList<>();
     }
+
 
     @Override
     public void freezeUser(User user) {
@@ -94,4 +134,9 @@ public class MockConnector implements DBConnector {
             }
         }
     }
+
+    @Override
+    public List<Order> getOrders() {return prescriptions;}
+
+
 }

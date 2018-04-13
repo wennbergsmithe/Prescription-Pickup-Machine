@@ -1,6 +1,9 @@
 package edu.ithaca.group5;
 
+import javax.swing.plaf.nimbus.State;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SQLConnector implements DBConnector {
     Connection connection;
@@ -14,8 +17,8 @@ public class SQLConnector implements DBConnector {
     public void addEmployee(Employee employee) {
         try {
             Statement statement = connection.createStatement();
-            statement.execute("INSERT INTO user (name, username, password, type, isFrozen, salt) VALUES ('" + employee.name + "', '" +
-                    employee.username + "', '" + employee.password + "', " + "'employee', " + employee.isFrozen +  ", '" + employee.passwordSalt + "')");
+            statement.execute("INSERT INTO user (name, username, password, type, isFrozen, salt, allergies) VALUES ('" + employee.name + "', '" +
+                    employee.username + "', '" + employee.password + "', " + "'employee', " + employee.isFrozen +  ", '" + employee.passwordSalt + "', '" + employee.allergies + "')");
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -26,8 +29,8 @@ public class SQLConnector implements DBConnector {
     public void addPharmacist(Pharmacist pharmacist) {
         try {
             Statement statement = connection.createStatement();
-            statement.execute("INSERT INTO user (name, username, password, type, isFrozen, salt) VALUES ('" + pharmacist.name + "', '" +
-                    pharmacist.username + "', '" + pharmacist.password + "', " + "'pharmacist', " + pharmacist.isFrozen + ", '" + pharmacist.passwordSalt +   "')");
+            statement.execute("INSERT INTO user (name, username, password, type, isFrozen, salt, allergies) VALUES ('" + pharmacist.name + "', '" +
+                    pharmacist.username + "', '" + pharmacist.password + "', " + "'pharmacist', " + pharmacist.isFrozen +  ", '" + pharmacist.passwordSalt + "', '" + pharmacist.allergies + "')");
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -38,12 +41,17 @@ public class SQLConnector implements DBConnector {
     public void addClient(Client client) {
         try {
             Statement statement = connection.createStatement();
-            statement.execute("INSERT INTO user (name, username, password, type, isFrozen, salt) VALUES ('" + client.name + "', '" +
-                    client.username + "', '" + client.password + "', " + "'client', " + client.isFrozen + ", '" + client.passwordSalt +  "')");
+            statement.execute("INSERT INTO user (name, username, password, type, isFrozen, salt, allergies) VALUES ('" + client.name + "', '" +
+                    client.username + "', '" + client.password + "', " + "'client', " + client.isFrozen +  ", '" + client.passwordSalt + "', '" + client.allergies + "')");
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public Order addOrder(String inName, String username, double inPrice, String inWarnings) {
+        return null;
     }
 
     public boolean isInDB(Client toCheck){
@@ -67,7 +75,7 @@ public class SQLConnector implements DBConnector {
         }
     }
 
-
+    @Override
     public Client removeClient(Client clientToRemove){
         try {
             Statement statement = connection.createStatement();
@@ -96,21 +104,21 @@ public class SQLConnector implements DBConnector {
         User user;
         try {
             Statement statement = connection.createStatement();
-            ResultSet results = statement.executeQuery("SELECT id, name, username, password, type, isFrozen, salt FROM user where username='" +
+            ResultSet results = statement.executeQuery("SELECT * FROM user where username='" +
                     username + "'");
             if (results.next()) {
                 switch (results.getString("type")) {
                     case "client":      user = new Client(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"), results.getString("salt"));
+                            results.getBoolean("isFrozen"), results.getString("salt"), results.getString("allergies"));
                         break;
                     case "employee":    user = new Employee(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"), results.getString("salt"));
+                            results.getBoolean("isFrozen"), results.getString("salt"), results.getString("allergies"));
                         break;
                     case "pharmacist":  user = new Pharmacist(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"), results.getString("salt"));
+                            results.getBoolean("isFrozen"), results.getString("salt"), results.getString("allergies"));
                         break;
                     default:            return null;
                 }
@@ -124,6 +132,104 @@ public class SQLConnector implements DBConnector {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public int getIDByUsername(String username) {
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet results = statement.executeQuery("SELECT id, name, username, password, type FROM user where username='" +
+                    username + "'");
+
+
+            results.next();
+            int row = results.getRow();
+            statement.close();
+            return row;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    @Override
+    public List<Order> getOrdersByUsername(String username) {
+        List<Order> orders = new ArrayList<Order>();
+
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+            int id = getIDByUsername(username);
+
+            ResultSet rslt = statement.executeQuery("SELECT * FROM prescription WHERE client_id=" + id);
+            while(rslt.next()){
+                long orderId = rslt.getLong("id");
+                String name = rslt.getString("name");
+                long clientId = rslt.getLong("client_id");
+                boolean isVal = rslt.getBoolean("is_validated");
+                double price = rslt.getDouble("price");
+                String warnings = rslt.getString("warnings");
+
+                ResultSet clientStuff = statement.executeQuery("SELECT * FROM user where id=" + clientId);
+                if(clientStuff.next()){
+                    Client client = new Client(clientStuff.getLong("id"), clientStuff.getString("name"),
+                            clientStuff.getString("username"), clientStuff.getString("password"),
+                            clientStuff.getBoolean("isFrozen"),clientStuff.getString("salt"),
+                            clientStuff.getString("allergies"));
+
+                    Order currentOrder = new Order(id,name,client,price,warnings);
+                    orders.add(currentOrder);
+                }
+            }
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+
+    @Override
+    public Order getOrderByNameAndUsername(String orderName, String username) {
+
+        Statement statement = null;
+
+        try{
+            statement = connection.createStatement();
+            int id = getIDByUsername(username);
+
+            if(id != -1){
+                ResultSet resultSet = statement.executeQuery("SELECT 1 FROM prescription WHERE client_id=" + id + " AND name='" + orderName + "'");
+
+
+                ResultSet clientStuff = statement.executeQuery("SELECT * FROM user where id=" + id);
+                Client client;
+
+                if(clientStuff.next()) {
+                    client = new Client(clientStuff.getLong("id"), clientStuff.getString("name"),
+                            clientStuff.getString("username"), clientStuff.getString("password"),
+                            clientStuff.getBoolean("isFrozen"),clientStuff.getString("salt"),
+                            clientStuff.getString("allergies"));
+                }else{
+                    statement.close();
+                    return null;
+                }
+                if (resultSet.next()){
+                    int orderId = resultSet.getInt("id");
+                    String name = resultSet.getString("name");
+                    double price = resultSet.getDouble("price");
+                    String warnings = resultSet.getString("warnings");
+                    Order toReturn = new Order(orderId,name,client,price,warnings);
+                    statement.close();
+                    return toReturn;
+                }
+            }else{
+                statement.close();
+                return null;
+            }
+        }catch (java.sql.SQLException e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
@@ -156,6 +262,7 @@ public class SQLConnector implements DBConnector {
         try {
             Statement statement = connection.createStatement();
             statement.execute("UPDATE user SET isFrozen = TRUE where id = " + user.id);
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -166,8 +273,44 @@ public class SQLConnector implements DBConnector {
         try {
             Statement statement = connection.createStatement();
             statement.execute("UPDATE user SET isFrozen = FALSE where id = " + user.id);
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public List<Order> getOrders() {
+        List<Order> orders = new ArrayList<>();
+
+        try{
+            Statement statement = connection.createStatement();
+            ResultSet rslt = statement.executeQuery("SELECT * FROM prescription");
+            while (rslt.next()){
+                long id = rslt.getLong("id");
+                String name = rslt.getString("name");
+                long clientId = rslt.getLong("client_id");
+                boolean isVal = rslt.getBoolean("is_validated");
+                double price = rslt.getDouble("price");
+                String warnings = rslt.getString("warnings");
+
+                ResultSet clientStuff = statement.executeQuery("SELECT id, name, username, password, type FROM user where id=" + clientId);
+                if(clientStuff.next()){
+                    Client client = new Client(clientStuff.getLong("id"), clientStuff.getString("name"),
+                            clientStuff.getString("username"), clientStuff.getString("password"),
+                            clientStuff.getBoolean("isFrozen"),clientStuff.getString("salt"),
+                            clientStuff.getString("allergies"));
+                    Order currentOrder = new Order(id,name,client,price,warnings);
+                    orders.add(currentOrder);
+                }
+            }
+            statement.close();
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return orders;
+    }
+
+
 }

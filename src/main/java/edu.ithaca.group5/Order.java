@@ -122,4 +122,30 @@ public class Order {
         }
 
     }
+    
+    /**
+     * Creates an array of client allergies by splitting it by ','
+     * Iterates through array and checks if the array item is contained
+     * in the order warnings. If found returns true, else, returns false
+     * @return boolean
+     */
+    public boolean checkAllergies(){
+        String[] clientAller = client.allergies.split(",");
+
+        int maxSize = clientAller.length;
+
+        for(int i = 0; i < maxSize; i++){
+            //Make sure the split function didn't just return an empty string (in the case of there not being any allergies)
+            if (!clientAller[i].equals("")) {
+                if (warnings.contains(clientAller[i])) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+
+
 }

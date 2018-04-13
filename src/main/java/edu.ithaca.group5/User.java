@@ -12,18 +12,26 @@ public class User {
     long id;
     String name;
     String username;
-    String password; //TODO: make secure
+    String password;
     String passwordSalt;
     double balance;
     boolean isFrozen;
+    String allergies = "";
 
-    protected User(long id, String name, String username, String password, boolean isFrozen, String passwordSalt) {
+
+    protected User(long id, String name, String username, String password, boolean isFrozen, String passwordSalt, String allergies) {
         this.id = id;
         this.name = name;
         this.username = username;
         this.password = password;
         this.isFrozen = isFrozen;
         this.passwordSalt = passwordSalt;
+        this.allergies = allergies;
+    }
+
+    protected User(long id, String name, String username, String password, boolean isFrozen, String allergies) {
+        this(id, name, username, password, isFrozen);
+        this.allergies = allergies;
     }
 
     protected User(long id, String name, String username, String password, boolean isFrozen) {
@@ -54,13 +62,8 @@ public class User {
     public boolean isPassword(String password) {
         Base64.Decoder dec = Base64.getDecoder();
         byte[] salt = dec.decode(passwordSalt);
-        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
-        SecretKeyFactory f = null;
         try {
-            f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-            byte[] hash = f.generateSecret(spec).getEncoded();
-            Base64.Encoder enc = Base64.getEncoder();
-            String hashString = enc.encodeToString(hash);
+            String hashString = hashPasswordAndSalt(password, salt);
             return hashString.equals(this.password);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -84,9 +87,18 @@ public class User {
         Base64.Decoder dec = Base64.getDecoder();
         byte[] salt = dec.decode(passwordSalt);
         return hashPasswordAndSalt(password, salt);
+
     }
 
-    public User(long id, String name, String username, String password) {
-        this(id, name, username, password, false);
+
+    /**
+     * Gets the type of this user
+     * @return the type of this user
+     */
+    public String getType() {
+        String className = this.getClass().getName();
+        className = className.toLowerCase();
+        String[] splitType = className.split("\\.");
+        return splitType[splitType.length - 1];
     }
 }
