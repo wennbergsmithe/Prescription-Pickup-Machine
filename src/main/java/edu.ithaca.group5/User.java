@@ -9,7 +9,7 @@ public class User {
     boolean isFrozen;
     String allergies;
 
-    protected User(long id, String name, String username, String password, boolean isFrozen, String allergies) {
+    protected User(long id, String name, String username, String password, boolean isFrozen, double balance, String allergies) {
         this.id = id;
         this.name = name;
         this.username = username;
@@ -19,8 +19,8 @@ public class User {
         this.allergies = allergies;
     }
 
-    public User(long id, String s, String name, String username, boolean isFrozen, String password, String allergies) {
-        this(id, name, username, password, false,allergies);
+    public User(long id, String s, String name, String username, boolean isFrozen, String password,double balance, String allergies) {
+        this(id, name, username, password, false, balance, allergies);
     }
 
     /**

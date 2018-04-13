@@ -6,13 +6,13 @@ import java.util.ArrayList;
 public class Client extends User {
     List<Order> orders;
 
-    public Client(long id, String name, String username, String password, boolean isFrozen, String allergies) {
-        super(id, name, username, password, isFrozen,allergies);
+    public Client(long id, String name, String username, String password, boolean isFrozen, double balance, String allergies) {
+        super(id, name, username, password, isFrozen,balance,allergies);
         orders = new ArrayList<Order>();
     }
 
-    public Client(long id, String name, String username, String password, String allergies) {
-        this(id, name, username, password, false,allergies);
+    public Client(long id, String name, String username, String password, double balance, String allergies) {
+        this(id, name, username, password, false,balance,allergies);
     }
 
     public void addFunds(double amount){

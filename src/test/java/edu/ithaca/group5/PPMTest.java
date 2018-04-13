@@ -26,7 +26,7 @@ class PPMTest {
         assertNull(ppm.login("test", "test"));
 
         // Client
-        ppm.dbConnection.addClient(new Client(-1, "test", "user", "pass", false,""));
+        ppm.dbConnection.addClient(new Client(-1, "test", "user", "pass", false,0,""));
         User user = ppm.login("user", "pass");
         assertEquals("test", user.name);
         assertEquals("user", user.username);
@@ -35,7 +35,7 @@ class PPMTest {
         assertEquals(Client.class, user.getClass());
 
         // Employee
-        ppm.dbConnection.addEmployee(new Employee(-1, "test2", "user2", "pass2", false, ""));
+        ppm.dbConnection.addEmployee(new Employee(-1, "test2", "user2", "pass2", false,0, ""));
         user = ppm.login("user2", "pass2");
         assertEquals("test2", user.name);
         assertEquals("user2", user.username);
@@ -44,7 +44,7 @@ class PPMTest {
         assertEquals(Employee.class, user.getClass());
 
         // Pharmacist
-        ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test3", "user3", "pass3", false, ""));
+        ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test3", "user3", "pass3", false,0, ""));
         user = ppm.login("user3", "pass3");
         assertEquals("test3", user.name);
         assertEquals("user3", user.username);
@@ -52,7 +52,7 @@ class PPMTest {
         assertFalse(user.isFrozen);
         assertEquals(Pharmacist.class, user.getClass());
 
-        ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test4", "user4", "pass4", true, ""));
+        ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test4", "user4", "pass4", true,0, ""));
         user = ppm.login("user4", "pass4");
         assertNull(user);
 
@@ -60,7 +60,7 @@ class PPMTest {
 
     @Test
     public void maxLoginAttempts() {
-        ppm.dbConnection.addEmployee(new Employee(-1, "test", "username", "pass", false, ""));
+        ppm.dbConnection.addEmployee(new Employee(-1, "test", "username", "pass", false,0, ""));
         for (int i = 0; i < ppm.MAX_LOGIN_ATTEMPTS; i++) {
             User user = ppm.dbConnection.getUserByUsername("username");
             assertFalse(user.isFrozen);
@@ -97,7 +97,7 @@ class PPMTest {
 
         //Creating a user who already exists
         //Setup active PPM user
-        tempP = new Pharmacist(-1, "thePharmacist", "pharmacistmain", "tempP0", "");
+        tempP = new Pharmacist(-1, "thePharmacist", "pharmacistmain", "tempP0",0, "");
         ppm.dbConnection.addPharmacist(tempP);
         ppm.activeUser = tempP;
         //ppm.login("pharmacistmain", "tempP0");
@@ -120,7 +120,7 @@ class PPMTest {
         //Different combinations of different types of active users trying to create different types of users
         try {
             //Client as Active User
-            tempC = new Client(-1, "theClient", "clientmain", "tempC0", "");
+            tempC = new Client(-1, "theClient", "clientmain", "tempC0",0, "");
             ppm.activeUser = tempC;
             //CANNOT create a Client
             currentName = "CMadeByC";
@@ -146,7 +146,7 @@ class PPMTest {
 
 
             //Employee as Active User
-            tempE = new Employee(-1, "theEmployee", "employeemain", "tempE0", "");
+            tempE = new Employee(-1, "theEmployee", "employeemain", "tempE0",0, "");
             ppm.activeUser = tempE;
             //CAN create a Client
             currentName = "CMadeByE";
@@ -184,7 +184,7 @@ class PPMTest {
 
 
             //Pharmacist as Active User
-            tempP = new Pharmacist(-1, "thePharmacist", "pharmacistmain", "tempP0", "");
+            tempP = new Pharmacist(-1, "thePharmacist", "pharmacistmain", "tempP0",0, "");
             ppm.activeUser = tempP;
             //CAN create a Client
             currentName = "CMadeByP";

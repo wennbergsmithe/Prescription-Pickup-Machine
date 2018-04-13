@@ -17,7 +17,7 @@ public class SQLConnector implements DBConnector {
         try {
             Statement statement = connection.createStatement();
             statement.execute("INSERT INTO user (name, username, password, type, isFrozen) VALUES ('" + employee.name + "', '" +
-                    employee.username + "', '" + employee.password + "', " + "'employee', " + employee.isFrozen + "', '" + employee.allergies +  ")");
+                    employee.username + "', '" + employee.password + "', " + "'employee', " + employee.isFrozen + "', '"+ employee.balance + "', '" + employee.allergies +  ")");
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -29,7 +29,7 @@ public class SQLConnector implements DBConnector {
         try {
             Statement statement = connection.createStatement();
             statement.execute("INSERT INTO user (name, username, password, type, isFrozen) VALUES ('" + pharmacist.name + "', '" +
-                    pharmacist.username + "', '" + pharmacist.password + "', " + "'pharmacist', " + pharmacist.isFrozen + "', '" + pharmacist.allergies +  ")");
+                    pharmacist.username + "', '" + pharmacist.password + "', " + "'pharmacist', " + pharmacist.isFrozen + "', '"+ pharmacist.balance + "', '" + pharmacist.allergies +  ")");
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -41,7 +41,7 @@ public class SQLConnector implements DBConnector {
         try {
             Statement statement = connection.createStatement();
             statement.execute("INSERT INTO user (name, username, password, type, isFrozen) VALUES ('" + client.name + "', '" +
-                    client.username + "', '" + client.password + "', " + "'client', " + client.isFrozen + "', '" + client.allergies +  ")");
+                    client.username + "', '" + client.password + "', " + "'client', " + client.isFrozen + "', '"+ client.balance + "', '" + client.allergies +  ")");
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -100,15 +100,15 @@ public class SQLConnector implements DBConnector {
                 switch (results.getString("type")) {
                     case "client":      user = new Client(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"),results.getString("allergies"));
+                            results.getBoolean("isFrozen"),results.getDouble("balance"),results.getString("allergies"));
                         break;
                     case "employee":    user = new Employee(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"), results.getString("allergies"));
+                            results.getBoolean("isFrozen"),results.getDouble("balance"), results.getString("allergies"));
                         break;
                     case "pharmacist":  user = new Pharmacist(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"), results.getString("allergies"));
+                            results.getBoolean("isFrozen"),results.getDouble("balance"), results.getString("allergies"));
                         break;
                     default:            return null;
                 }
@@ -135,15 +135,15 @@ public class SQLConnector implements DBConnector {
                 switch (results.getString("type")) {
                     case "client":      user = new Client(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"),results.getString("allergies"));
+                            results.getBoolean("isFrozen"),results.getDouble("balance"),results.getString("allergies"));
                         break;
                     case "employee":    user = new Employee(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"), results.getString("allergies"));
+                            results.getBoolean("isFrozen"),results.getDouble("balance"), results.getString("allergies"));
                         break;
                     case "pharmacist":  user = new Pharmacist(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
-                            results.getBoolean("isFrozen"), results.getString("allergies"));
+                            results.getBoolean("isFrozen"),results.getDouble("balance"), results.getString("allergies"));
                         break;
                     default:            return null;
                 }
@@ -248,11 +248,12 @@ public class SQLConnector implements DBConnector {
                 String warnings = rslt.getString("warnings");
                 boolean isFrozen = rslt.getBoolean("isFrozen");
                 String allergies = rslt.getString("allergies");
+                double balance = rslt.getDouble("balance");
 
                 ResultSet clientStuff = statement.executeQuery("SELECT id, name, username, password, type FROM user where id=" + clientId);
                 if(clientStuff.next()){
                     Client client = new Client(clientStuff.getLong("id"), clientStuff.getString("name"),
-                            clientStuff.getString("username"), clientStuff.getString("password"),isFrozen,allergies);
+                            clientStuff.getString("username"), clientStuff.getString("password"),isFrozen, balance,allergies);
 
                     Order currentOrder = new Order(id,name,client,price,warnings);
                     orders.add(currentOrder);

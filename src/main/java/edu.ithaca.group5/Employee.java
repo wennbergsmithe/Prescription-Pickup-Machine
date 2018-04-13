@@ -7,12 +7,12 @@ import java.util.List;
 public class Employee extends User {
 
 
-    public Employee(long id, String name, String username, String password, boolean isFrozen, String allergies) {
-        super(id, name, username, password, isFrozen,allergies);
+    public Employee(long id, String name, String username, String password, boolean isFrozen, double balance, String allergies) {
+        super(id, name, username, password, isFrozen, balance, allergies);
     }
 
-    public Employee(long id, String name, String username, String password,String allergies) {
-        this(id, name, username, password, false,allergies);
+    public Employee(long id, String name, String username, String password, double balance, String allergies) {
+        this(id, name, username, password, false,balance,allergies);
     }
 
     /**
