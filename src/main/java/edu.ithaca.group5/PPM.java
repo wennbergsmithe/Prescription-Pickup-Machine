@@ -12,6 +12,8 @@ public class PPM {
     User activeUser;
     final int MAX_LOGIN_ATTEMPTS = 3;
     Map<String, Integer> failedLoginAttempts = new HashMap<>();
+    List<Issue> issues = new ArrayList<Issue>();
+    boolean justLoggedIn;
 
     public PPM() throws SQLException {
         setupSQL();
@@ -152,6 +154,82 @@ public class PPM {
         return createdUser;
     }
 
+    /**
+     * Adds an issue to the PPM's current list of issues
+     * @param name The name of the issue
+     * @param description Brief description of the issue
+     * @return The created Issue Object, which is null if the description was the empty string
+     */
+    public Issue addIssue(String name, String description) {
+        Issue issueToAdd = null;
+        if (!description.equals("")) {
+            String username;
+            if (this.activeUser == null) {
+                username = "";
+            } else {
+                username = this.activeUser.username;
+            }
+            issueToAdd = new Issue(name, description, username);
+            issues.add(issueToAdd);
+        }
+        return issueToAdd;
+    }
+
+    /**
+     * Removes an issue from the PPM's list of current issues
+     * @param name The name of the issue to be removed
+     * @return The removed issue, or null of the issue was not found in the PPM's list
+     */
+    public Issue removeIssue(String name) {
+        Issue removedIssue = null;
+
+        Iterator<Issue> itr = issues.iterator();
+        while (itr.hasNext()) {
+            Issue issue = itr.next();
+            if (issue.name.toLowerCase().equals(name.toLowerCase())) {
+                removedIssue = issue;
+                itr.remove();
+            }
+        }
+
+        return removedIssue;
+
+    }
+
+    /**
+     * Labels an issue as solved
+     * @param name The name of the issue
+     * @return True if the issue was found and is now labeled as solved: false if the issue of the given name was not
+     * found in the PPM's list
+     */
+    public boolean solveIssue(String name) {
+        for (Issue issue : issues) {
+            if (issue.name.equals(name)) {
+                issue.setSolved();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Clears all issues labeled as solved in the PPM's list of current issues
+     */
+    public void clearSolvedIssues() {
+        for (Issue issue : issues) {
+            if (issue.solved) {
+                issues.remove(issue);
+            }
+        }
+    }
+
+    /**
+     * Completely clears the PPM's list of issues
+     */
+    public void clearIssues() {
+        issues.clear();
+    }
+
     private static void printBreak() {
         System.out.println("----------------------------------------------------------");
     }
@@ -165,6 +243,7 @@ public class PPM {
         System.out.println("login - Log into an existing account");
         System.out.println("logout - Log out of the current account");
         System.out.println("exit - Ends the program");
+        System.out.println("report - Report an issue with the PPM");
         printBreak();
         System.out.println("Client Commands:\n");
         System.out.println("pay - Pay for an order");
@@ -177,6 +256,11 @@ public class PPM {
         System.out.println("addorder - Add a new order to a client's account");
         System.out.println("remove - Delete a user from the PPM's database");
         System.out.println("unblock - Disable the lock on an account");
+        System.out.println("issues - Lists all current issues with the PPM and their solved/unsolved status");
+        System.out.println("solveissue - Label an issue as solved");
+        System.out.println("removeissue - Delete a specified issue");
+        System.out.println("clearsolvedissues - Delete all solved issues from the PPM");
+        System.out.println("clearissues - Delete all current issues with the PPM, even if they are not solved");
 
     }
 
@@ -187,14 +271,15 @@ public class PPM {
             ppm.login("testPharmacist", "password");
             Scanner console = new Scanner(System.in);
 
+            //Print welcome message
             System.out.println("Welcome to the Prescription Pickup Machine!");
             System.out.println("Type 'help' for a list of commands");
-
 
             String currentInput;
             boolean done = false;
             while (!done) {
                 printBreak();
+                //Print status screen
                 if (ppm.activeUser != null) {
                     System.out.println("\nCurrently logged in as " + ppm.activeUser.name);
                     if (ppm.activeUser.getType().equals("client")) {
@@ -205,6 +290,26 @@ public class PPM {
                     System.out.println();
                 } else {
                     System.out.println("\nNobody is currently logged in\n");
+                }
+
+                //Print message for a new user logging in
+                if (ppm.justLoggedIn) {
+                    //Print any new issues with the PPM (only if the account is an employee)
+                    if (ppm.activeUser != null && !ppm.activeUser.getType().equals("client")) {
+                        String issues = "";
+                        for (Issue issue : ppm.issues) {
+                            if (issue.isNew) {
+                                issues += issue.toString() + '\n';
+                                issue.setOld();
+                            }
+                        }
+                        if (!issues.equals("")) {
+                            System.out.println("There were new issues reported within the PPM that need your attention!");
+                            System.out.println(issues);
+                        }
+                    }
+
+                    ppm.justLoggedIn = false;
                 }
 
                 currentInput = console.nextLine();
@@ -283,6 +388,7 @@ public class PPM {
                         if (newUser != null) {
                             System.out.println("Successfully logged into " + newUser.name + "'s account!");
                             ppm.activeUser = newUser;
+                            ppm.justLoggedIn = true;
                         } else {
                             User possibleUser = ppm.dbConnection.getUserByUsername(username);
                             if (possibleUser != null && possibleUser.isFrozen) {
@@ -341,7 +447,7 @@ public class PPM {
                             Order tempOrder = new Order(-1, "", client, 0, inWarnings);
                             if (tempOrder.checkAllergies()) {
                                 System.out.println("There's an allergy confliction with this medication!\n" +
-                                        "Do you still want to give this order to the client?");
+                                        "Do you still want to give this order to the client? (Y/N)");
                                 String prompt = null;
                                 while (prompt == null) {
                                     prompt = console.nextLine();
@@ -432,6 +538,119 @@ public class PPM {
                     }
                 } else if (currentInput.equals("help")) {
                     printCommands();
+                } else if (currentInput.equals("report")) {
+                    System.out.println("Please give a brief description of the issue");
+                    String desc = console.nextLine();
+                    System.out.println("Enter the name of the issue");
+                    String name = console.nextLine();
+
+                    if (ppm.addIssue(name, desc) != null) {
+                        System.out.println("Issue successfully added to the PPM. The Employees will be notified.");
+                    } else {
+                        System.out.println("Please enter a valid description for the issue");
+                    }
+
+                } else if (currentInput.equals("issues")) {
+                    if (ppm.activeUser != null) {
+                        if (!ppm.activeUser.getType().equals("client")) {
+                            String issues = "";
+                            for (Issue issue : ppm.issues) {
+                                issues += issue.toString() + '\n';
+                            }
+                            if (!issues.equals("")) {
+                                System.out.println("Current and Past Issues:");
+                                System.out.print(issues);
+                            } else {
+                                System.out.println("There are no current issues with the PPM");
+                            }
+                        } else {
+                            System.out.println("You don't have permission to view the PPM's issues!");
+                        }
+                    } else {
+                        System.out.println("Log into an employee account to access the PPM's issues");
+                    }
+                } else if (currentInput.equals("solveissue")) {
+                    if (ppm.activeUser != null) {
+                        if (!ppm.activeUser.getType().equals("client")) {
+                            System.out.println("Enter the name of the issue that's been solved");
+                            String name = console.nextLine();
+
+                            if (ppm.solveIssue(name.toLowerCase())) {
+                                System.out.println("The issue named " + name + " is now solved");
+                            } else {
+                                System.out.println("Invalid issue name!");
+                            }
+                        } else {
+                            System.out.println("Only employees can label issues as solved");
+                        }
+                    } else {
+                        System.out.println("You must log into an employee's account to label an issue as solved!");
+                    }
+
+                } else if (currentInput.equals("removeissue")) {
+                    if (ppm.activeUser != null) {
+                        if (!ppm.activeUser.getType().equals("client")) {
+                            System.out.println("Enter the name of the issue you want to remove");
+                            String name = console.nextLine();
+
+                            if (ppm.removeIssue(name) != null) {
+                                System.out.println("The issue named " + name + " has been successfully deleted");
+                            } else {
+                                System.out.println("Invalid issue name!");
+                            }
+                        } else {
+                            System.out.println("You do not have permission to remove reported PPM issues");
+                        }
+                    } else {
+                        System.out.println("You must be logged into an employee account to remove an issue!");
+                    }
+
+                } else if (currentInput.equals("clearsolvedissues")) {
+                    if (ppm.activeUser != null) {
+                        if (!ppm.activeUser.getType().equals("client")) {
+                            System.out.println("Are you sure you want to clear all solved issues? (Y/N)");
+                            String prompt = null;
+                            while (prompt == null) {
+                                prompt = console.nextLine();
+                                if (prompt.toLowerCase().equals("y")) {
+                                    ppm.clearSolvedIssues();
+                                    System.out.println("All solved issues have been cleared");
+                                } else if (prompt.toLowerCase().equals("n")) {
+                                    prompt = "escape";
+                                } else {
+                                    System.out.println("Bad input: try again");
+                                    prompt = null;
+                                }
+                            }
+                        } else {
+                            System.out.println("You do not have permission to remove reported PPM issues");
+                        }
+                    } else {
+                        System.out.println("You must be logged into an employee account to remove an issue!");
+                    }
+                } else if (currentInput.equals("clearissues")) {
+                    if (ppm.activeUser != null) {
+                        if (!ppm.activeUser.getType().equals("client")) {
+                            System.out.println("Are you sure absolutely sure you want to clear all issues? This cannot be undone(Y/N)");
+                            String prompt = null;
+                            while (prompt == null) {
+                                prompt = console.nextLine();
+                                if (prompt.toLowerCase().equals("y")) {
+                                    ppm.clearIssues();
+                                    System.out.println("All issues have been cleared");
+                                } else if (prompt.toLowerCase().equals("n")) {
+                                    prompt = "escape";
+                                } else {
+                                    System.out.println("Bad input: try again");
+                                    prompt = null;
+                                }
+                            }
+                        } else {
+                            System.out.println("You do not have permission to remove reported PPM issues");
+                        }
+                    } else {
+                        System.out.println("You must be logged into an employee account to remove an issue!");
+                    }
                 }
                 else {
                     System.out.println("Invalid Input!\n");

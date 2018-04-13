@@ -71,7 +71,46 @@ class PPMTest {
     }
 
     @Test
-    public void createUserTest() throws SQLException {
+    public void issueListTest() {
+        Issue issue;
+
+        issue = ppm.addIssue("TestIssue", "This is a test");
+        assertEquals(1, ppm.issues.size());
+        assertNotNull(issue);
+
+        issue = ppm.removeIssue("TestIssue");
+        assertEquals(0, ppm.issues.size());
+        assertNotNull(issue);
+        assertEquals("TestIssue", issue.name);
+
+        ppm.addIssue("Test1", "test");
+        issue = ppm.addIssue("Test2", "test");
+        ppm.addIssue("Test3", "test");
+        assertEquals(3, ppm.issues.size());
+
+        assertTrue(ppm.solveIssue("Test2"));
+        assertFalse(ppm.solveIssue("Bad Name"));
+        assertEquals(3, ppm.issues.size());
+        assertTrue(issue.solved);
+
+        issue = ppm.removeIssue("Bad Name");
+        assertNull(issue);
+
+        ppm.clearSolvedIssues();
+        assertEquals(2, ppm.issues.size());
+        ppm.addIssue("Test2", "test");
+        assertEquals(3, ppm.issues.size());
+        ppm.clearIssues();
+        assertEquals(0, ppm.issues.size());
+
+        issue = ppm.addIssue("Blank", "");
+        assertNull(issue);
+        assertEquals(0, ppm.issues.size());
+
+    }
+
+    @Test
+    public void createUserTest() {
         String currentName = "";
         String currentUsername = "";
         String currentPassword = "";
