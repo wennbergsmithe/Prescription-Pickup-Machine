@@ -30,7 +30,7 @@ class PPMTest {
         User user = ppm.login("user", "pass");
         assertEquals("test", user.name);
         assertEquals("user", user.username);
-        assertEquals("pass", user.password);
+        assertTrue(user.isPassword("pass"));
         assertFalse(user.isFrozen);
         assertEquals(Client.class, user.getClass());
 
@@ -39,7 +39,7 @@ class PPMTest {
         user = ppm.login("user2", "pass2");
         assertEquals("test2", user.name);
         assertEquals("user2", user.username);
-        assertEquals("pass2", user.password);
+        assertTrue(user.isPassword("pass2"));
         assertFalse(user.isFrozen);
         assertEquals(Employee.class, user.getClass());
 
@@ -48,7 +48,7 @@ class PPMTest {
         user = ppm.login("user3", "pass3");
         assertEquals("test3", user.name);
         assertEquals("user3", user.username);
-        assertEquals("pass3", user.password);
+        assertTrue(user.isPassword("pass3"));
         assertFalse(user.isFrozen);
         assertEquals(Pharmacist.class, user.getClass());
 

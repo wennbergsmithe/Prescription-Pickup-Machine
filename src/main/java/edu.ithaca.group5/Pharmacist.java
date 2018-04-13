@@ -11,6 +11,9 @@ public class Pharmacist extends Employee {
         this(id, name, username, password, false);
     }
 
+    public Pharmacist(long id, String name, String username, String password, boolean isFrozen, String salt) {
+        super(id, name, username, password, isFrozen, salt);
+    }
 
 
     /**

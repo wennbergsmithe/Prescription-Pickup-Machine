@@ -13,6 +13,9 @@ public class Client extends User {
         this(id, name, username, password, false);
     }
 
+    public Client(long id, String name, String username, String password, boolean isFrozen, String salt) {
+        super(id, name, username, password, isFrozen, salt);
+    }
 
     public void addFunds(double amount){
         balance += amount;

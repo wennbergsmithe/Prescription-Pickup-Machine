@@ -11,6 +11,10 @@ public class Employee extends User {
         this(id, name, username, password, false);
     }
 
+    public Employee(long id, String name, String username, String password, boolean isFrozen, String salt) {
+        super(id, name, username, password, isFrozen, salt);
+    }
+
     /**
      * Takes in an Order object and calls the vadlidated setter to make it true.
      * @param theOrder
