@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Client extends User {
-    List<Order> orders;
+    List<Order> orders = new ArrayList<Order>();
 
     public Client(long id, String name, String username, String password, boolean isFrozen) {
         super(id, name, username, password, isFrozen);

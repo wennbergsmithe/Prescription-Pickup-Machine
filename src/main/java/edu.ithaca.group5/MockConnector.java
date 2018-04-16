@@ -31,6 +31,10 @@ public class MockConnector implements DBConnector {
 
     @Override
     public Order addOrder(String inName, String username, double inPrice, String inWarnings) {
+        Client client = new Client(-1, username, username, "none", false);
+        Order ordertoadd = new Order(prescriptions.size(), inName, client, inPrice, inWarnings);
+        prescriptions.add(ordertoadd);
+
         return null;
     }
 
