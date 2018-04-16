@@ -12,6 +12,7 @@ public class PPM {
     User activeUser;
     final int MAX_LOGIN_ATTEMPTS = 3;
     Map<String, Integer> failedLoginAttempts = new HashMap<>();
+    List<Order> loadedOrders = new ArrayList<Order>();
     List<Issue> issues = new ArrayList<Issue>();
     boolean justLoggedIn;
 
@@ -155,6 +156,22 @@ public class PPM {
     }
 
     /**
+     * Loads an order to the ppm's list of loaded orders
+     * @param order The order to be loaded
+     */
+    public void loadOrder(Order order) {
+        loadedOrders.add(order);
+    }
+
+    /**
+     * Gets a list of all the orders currently loaded to the PPM
+     * @return The list of orders that are loaded to the PPM
+     */
+    public List<Order> getLoadedOrders() {
+        return loadedOrders;
+    }
+
+    /**
      * Adds an issue to the PPM's current list of issues
      * @param name The name of the issue
      * @param description Brief description of the issue
@@ -243,6 +260,7 @@ public class PPM {
         System.out.println("login - Log into an existing account");
         System.out.println("logout - Log out of the current account");
         System.out.println("exit - Ends the program");
+        System.out.println("listloadedorders - Lists the orders that are currently in the PPM");
         System.out.println("report - Report an issue with the PPM");
         printBreak();
         System.out.println("Client Commands:\n");
@@ -254,6 +272,8 @@ public class PPM {
         System.out.println("Keep in mind Employees can only operate on client accounts\n");
         System.out.println("create - Creates a new account");
         System.out.println("addorder - Add a new order to a client's account");
+        System.out.println("validate - Validate an order");
+        System.out.println("load - Load an order to the PPM");
         System.out.println("remove - Delete a user from the PPM's database");
         System.out.println("unblock - Disable the lock on an account");
         System.out.println("issues - Lists all current issues with the PPM and their solved/unsolved status");
@@ -474,6 +494,57 @@ public class PPM {
                         System.out.println("No user exists with username " + username);
                     }
                     System.out.println("");
+                } else if (currentInput.equals("validate")) {
+                    if (ppm.activeUser != null) {
+                        if (ppm.activeUser.getType().equals("pharmacist")) {
+                            System.out.println("What is the username of the client that the order is for?");
+                            String username = console.nextLine();
+                            System.out.println("What is the name of the order?");
+                            String ordername = console.nextLine();
+                            Order order = ppm.dbConnection.getOrderByNameAndUsername(ordername, username);
+                            if (order != null) {
+                                order.setValidated(true);
+                                System.out.println("The order for user " + username + " with an order name of " + ordername +
+                                        " has been successfully validated");
+                            } else {
+                                System.out.println("No order found for " + username + " with a name of " + ordername);
+                            }
+                        } else {
+                            System.out.println("You must be a pharmacist to validate an order!");
+                        }
+                    } else {
+                        System.out.println("You must be logged in to validate an order!");
+                    }
+                } else if (currentInput.equals("load")) {
+                    if (ppm.activeUser != null) {
+                        if (!ppm.activeUser.getType().equals("client")) {
+                            System.out.println("What is the username of the client that the order is for?");
+                            String username = console.nextLine();
+                            System.out.println("What is the name of the order?");
+                            String ordername = console.nextLine();
+                            Order order = ppm.dbConnection.getOrderByNameAndUsername(ordername, username);
+                            if (order != null) {
+                                ppm.loadOrder(order);
+                                System.out.println("Loaded the order to the PPM!");
+                            } else {
+                                System.out.println("No order found for user " + username + " with an order name of " + ordername);
+                            }
+                        } else {
+                            System.out.println("You must be an employee to load an order to the PPM!");
+                        }
+                    } else {
+                        System.out.println("You must be logged in to load an order to the PPM!");
+                    }
+                } else if (currentInput.equals("listloadedorders")) {
+                    List<Order> orders = ppm.getLoadedOrders();
+                    if (orders.size() != 0) {
+                        System.out.println("Orders that are currently in the PPM:");
+                        for (int i = 0; i < orders.size(); i++) {
+                            System.out.println(orders.get(i).orderDetails());
+                        }
+                    } else {
+                        System.out.println("No orders are currently loaded to the PPM");
+                    }
                 } else if (currentInput.equals("listorders")) {
                     if (ppm.activeUser != null) {
                         if (ppm.activeUser.getType().equals("client")) {
@@ -481,7 +552,7 @@ public class PPM {
                             if (orders.size() != 0) {
                                 System.out.println("Your current orders:");
                                 for (int i = 0; i < orders.size(); i++) {
-                                    System.out.println(orders.get(i));
+                                    System.out.println(orders.get(i).orderDetails());
                                 }
                             } else {
                                 System.out.println("You don't have any available orders!");
