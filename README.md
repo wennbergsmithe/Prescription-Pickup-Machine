@@ -17,6 +17,8 @@ Waffle.io: https://waffle.io/martypv/Drug-Dispenser
 <br>Sprint 2 Review Doc: https://docs.google.com/document/d/1CHM98vUjxuQtrUBdtoz8HD5juXbX8U5FbObUcq-8LH8/edit?usp=sharing
 <br>Sprint 2 Retrospective: https://docs.google.com/document/d/1myjvUHm9BOD74lS6Shqmdu2_smhABLwcYpXpXwvokUA/edit?usp=sharing
 
+<br>Sprint 3 Goal: Deliver a working system
+
 ## Setup Notes
 
 Create two MySQL databases: one for testing and one for production. Seed both of these with the most recent sql script in `src/main/sql/`.
