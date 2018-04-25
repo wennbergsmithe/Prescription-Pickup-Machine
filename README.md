@@ -18,6 +18,7 @@ Waffle.io: https://waffle.io/martypv/Drug-Dispenser
 <br>Sprint 2 Retrospective: https://docs.google.com/document/d/1myjvUHm9BOD74lS6Shqmdu2_smhABLwcYpXpXwvokUA/edit?usp=sharing
 
 <br>Sprint 3 Goal: Deliver a working and optimized system
+<br> Reverse Engineering Group 2: https://docs.google.com/document/d/1vBz5_DFn_ssJsdFNEi-g9W50_abMPLqkHvzcnlAW48E/edit?usp=sharing
 
 ## Setup Notes
 
