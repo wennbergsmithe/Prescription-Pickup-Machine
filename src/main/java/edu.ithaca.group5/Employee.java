@@ -6,21 +6,20 @@ import java.util.List;
 
 public class Employee extends User {
 
-
-    public Employee(long id, String name, String username, String password, boolean isFrozen) {
-        super(id, name, username, password, isFrozen);
+    public Employee(long id, String name, String username, String password, boolean isFrozen, double balance) {
+        super(id, name, username, password, isFrozen, balance, "");
     }
 
-    public Employee(long id, String name, String username, String password) {
-        this(id, name, username, password, false);
+    public Employee(long id, String name, String username, String password, double balance) {
+        this(id, name, username, password, false, balance);
     }
 
-    public Employee(long id, String name, String username, String password, boolean isFrozen, String salt, String allergies) {
-        super(id, name, username, password, isFrozen, salt, allergies);
+    public Employee(long id, String name, String username, String password, boolean isFrozen, String salt, double balance, String allergies) {
+        super(id, name, username, password, isFrozen, salt, balance, allergies);
     }
 
-    public Employee(long id, String name, String username, String password, boolean isFrozen, String allergies) {
-        super(id, name, username, password, isFrozen, allergies);
+    public Employee(long id, String name, String username, String password, boolean isFrozen, double balance, String allergies) {
+        super(id, name, username, password, isFrozen, balance, allergies);
     }
 
     /**

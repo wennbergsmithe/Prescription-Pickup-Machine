@@ -131,12 +131,12 @@ public class PPM {
         //User must not already exist: add them to the database
         switch(type) {
             case ("client"):
-                Client client = new Client(-1, name, username, password);
+                Client client = new Client(-1, name, username, password, false);
                 dbConnection.addClient(client);
                 createdUser = client;
                 break;
             case("employee"):
-                Employee employee = new Employee(-1, name, username, password);
+                Employee employee = new Employee(-1, name, username, password, 0);
                 dbConnection.addEmployee(employee);
                 createdUser = employee;
                 break;
@@ -371,7 +371,7 @@ public class PPM {
 
                             User user = ppm.dbConnection.getUserByUsername(username);
                             if (user != null) {
-                                Client client = new Client(user.id, user.name, user.username, user.password, user.isFrozen, user.passwordSalt, user.allergies);
+                                Client client = new Client(user.id, user.name, user.username, user.password, user.balance, user.isFrozen, user.passwordSalt, user.allergies);
                                 System.out.println("Are you sure? (Y/N)");
                                 String prompt = null;
                                 while (prompt == null) {
@@ -453,7 +453,7 @@ public class PPM {
                     User user = ppm.dbConnection.getUserByUsername(username);
                     if (user != null) {
                         if (user.getType().equals("client")) {
-                            Client client = new Client(user.id, user.name, user.username, user.password, user.isFrozen, user.passwordSalt, user.allergies);
+                            Client client = new Client(user.id, user.name, user.username, user.password, user.balance, user.isFrozen, user.passwordSalt, user.allergies);
                             System.out.println("What is the name of the order?");
                             String inName = console.nextLine();
                             System.out.println("What is the price of this order?");

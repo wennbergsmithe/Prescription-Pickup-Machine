@@ -21,8 +21,8 @@ public class EmployeeTest {
 
     @Test
     public void unfreezeTest() {
-        connection.addClient(new Client(1, "test", "user", "pass", true, "Allergy1"));
-        Employee employee = new Employee(2, "emp", "user2", "pass");
+        connection.addClient(new Client(1, "test", "user", "pass", true,0, "Allergy1"));
+        Employee employee = new Employee(2, "emp", "user2", "pass",false,0);
         User user = connection.getUserByUsername("user");
         assertTrue(user.isFrozen);
         employee.unfreezeUser("user", connection);
@@ -39,7 +39,7 @@ public class EmployeeTest {
 
         try{
             PPM tester = new PPM(true);
-            Client toDelete = new Client(123456,"test1", "un", "pw");
+            Client toDelete = new Client(123456, "test1", "un", "pw", false);
 
             tester.dbConnection.addClient(toDelete);
             boolean isThere = tester.dbConnection.isInDB(toDelete);
@@ -58,7 +58,7 @@ public class EmployeeTest {
     void viewOrders() {
         try{
             PPM tester = new PPM(true);
-            Employee emp = new Employee(1,"empTest","un","pw", false, "none");
+            Employee emp = new Employee(1,"empTest","un","pw", false,0, "none");
             emp.viewOrders(tester);
 
             //this method only prints orders to console and there is currently no way to load orders into the ppm to test

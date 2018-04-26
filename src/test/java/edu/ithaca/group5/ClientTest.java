@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ClientTest {
 
-    Client theClient = new Client(0,"John", "johnDoe", "1234", false,"");
+    Client theClient = new Client(0,"John", "johnDoe", "1234", false,0,"");
 
     @Test
     void addAllergy() {

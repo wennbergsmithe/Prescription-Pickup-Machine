@@ -4,25 +4,20 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Client extends User {
-    List<Order> orders = new ArrayList<Order>();
+    List<Order> orders;
+
+    public Client(long id, String name, String username, String password, boolean isFrozen, double balance,String allergies) {
+        super(id, name, username, password, isFrozen,balance,allergies);
+
+    }
+
+    public Client(long id, String name, String username, String password, double balance, boolean isFrozen, String salt, String allergies) {
+        super(id, name, username, password, isFrozen, salt, balance, allergies);
+    }
 
     public Client(long id, String name, String username, String password, boolean isFrozen) {
-        super(id, name, username, password, isFrozen);
-        orders = new ArrayList<Order>();
+        this(id, name, username, password, isFrozen, 0, "");
     }
-
-    public Client(long id, String name, String username, String password) {
-        this(id, name, username, password, false);
-    }
-
-    public Client(long id, String name, String username, String password, boolean isFrozen, String allergies) {
-        super(id, name, username, password, isFrozen, allergies);
-    }
-
-    public Client(long id, String name, String username, String password, boolean isFrozen, String salt, String allergies) {
-        super(id, name, username, password, isFrozen, salt, allergies);
-    }
-
 
     public void addFunds(double amount){
         balance += amount;
