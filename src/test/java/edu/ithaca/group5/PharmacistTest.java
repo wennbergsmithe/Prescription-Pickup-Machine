@@ -6,7 +6,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PharmacistTest {
 
-    Client aClient = new Client(2, "djkld", "sdjklfd", "skldjfs",0,"allergy1" );
+
+    Client aClient = new Client(2, "djkld", "sdjklfd", "skldjfs", false, 0, "allergy1");
     Pharmacist thePharm = new Pharmacist(5, "sdjkflsd", "fjksldfj", "sldkjfl",0, "");
 
 

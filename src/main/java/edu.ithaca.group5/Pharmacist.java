@@ -3,12 +3,17 @@ package edu.ithaca.group5;
 public class Pharmacist extends Employee {
 
 
-    public Pharmacist(long id, String name, String username, String password, boolean isFrozen, double balance, String allergies) {
-        super(id, name, username, password, isFrozen, balance, allergies);
+
+    public Pharmacist(long id, String name, String username, String password, boolean isFrozen, double balance, String salt, String allergies) {
+        super(id, name, username, password, isFrozen, salt, balance, allergies);
     }
 
     public Pharmacist(long id, String name, String username, String password, double balance, String allergies) {
-        this(id, name, username, password, false, balance, allergies);
+        super(id, name, username, password, false, balance, allergies);
+    }
+
+    public Pharmacist(long id, String name, String username, String password) {
+        super(id, name, username, password, false, 0, "");
     }
 
 

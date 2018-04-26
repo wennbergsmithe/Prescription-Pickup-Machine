@@ -2,6 +2,8 @@ package edu.ithaca.group5;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MockConnector implements DBConnector {
     List<User> users;
@@ -29,6 +31,12 @@ public class MockConnector implements DBConnector {
 
     @Override
     public Order addOrder(String inName, String username, double inPrice, String inWarnings) {
+        //Client client = new Client(-1, username, username, "none", false);
+        Client client = new Client(-1, inName, username, "none", false);
+
+        Order ordertoadd = new Order(prescriptions.size(), inName, client, inPrice, inWarnings);
+        prescriptions.add(ordertoadd);
+
         return null;
     }
 
@@ -43,10 +51,17 @@ public class MockConnector implements DBConnector {
     }
 
 
+    private static int iterations(int cost)
+    {
+        if ((cost < 0) || (cost > 30))
+            throw new IllegalArgumentException("cost: " + cost);
+        return 1 << cost;
+    }
+
     @Override
     public User getUserByUsernameAndPassword(String username, String password) {
         for (User user : users) {
-            if (user.username.equals(username) && user.password.equals(password)) {
+            if (user.username.equals(username) && user.isPassword(password)) {
                 return user;
             }
         }
@@ -78,12 +93,21 @@ public class MockConnector implements DBConnector {
     @Override
     public List<Order> getOrdersByUsername(String username) {
         List<Order> orders = new ArrayList<Order>();
-
+        for(Order order : prescriptions){
+            if(order.client.username.equals(username)){
+                orders.add(order);
+            }
+        }
         return orders;
     }
 
     @Override
-    public Order getOrderByNameAndUsername(String orderName, String username) {
+    public Order getOrderByNameAndUsername(String orderName, String username){
+        for(Order order : prescriptions){
+            if(order.client.username.equals(username) && order.name.equals(orderName)){
+                return order;
+            }
+        }
         return null;
     }
 
@@ -119,5 +143,6 @@ public class MockConnector implements DBConnector {
 
     @Override
     public List<Order> getOrders() {return prescriptions;}
+
 
 }

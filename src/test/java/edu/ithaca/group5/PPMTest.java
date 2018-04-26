@@ -26,35 +26,42 @@ class PPMTest {
         assertNull(ppm.login("test", "test"));
 
         // Client
-        ppm.dbConnection.addClient(new Client(-1, "test", "user", "pass", false,0,""));
+        Client clientToAdd = new Client(-1, "test", "user", "pass", false);
+        ppm.dbConnection.addClient(clientToAdd);
         User user = ppm.login("user", "pass");
-        assertEquals("test", user.name);
-        assertEquals("user", user.username);
-        assertEquals("pass", user.password);
+        assertEquals(clientToAdd.name, user.name);
+        assertEquals(clientToAdd.username, user.username);
+        assertTrue(user.isPassword("pass"));
         assertFalse(user.isFrozen);
+        assertEquals(clientToAdd.balance, user.balance);
         assertEquals(Client.class, user.getClass());
 
         // Employee
-        ppm.dbConnection.addEmployee(new Employee(-1, "test2", "user2", "pass2", false,0, ""));
+        Employee empToAdd = new Employee(-1, "test2", "user2", "pass2", false,0, "");
+        ppm.dbConnection.addEmployee(empToAdd);
         user = ppm.login("user2", "pass2");
         assertEquals("test2", user.name);
         assertEquals("user2", user.username);
-        assertEquals("pass2", user.password);
+        assertTrue(user.isPassword("pass2"));
         assertFalse(user.isFrozen);
+        assertEquals(empToAdd.balance, user.balance);
         assertEquals(Employee.class, user.getClass());
 
         // Pharmacist
-        ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test3", "user3", "pass3", false,0, ""));
+        Pharmacist pharmToAdd = new Pharmacist(-1, "test3", "user3", "pass3");
+        ppm.dbConnection.addPharmacist(pharmToAdd);
         user = ppm.login("user3", "pass3");
         assertEquals("test3", user.name);
         assertEquals("user3", user.username);
-        assertEquals("pass3", user.password);
+        assertTrue(user.isPassword("pass3"));
         assertFalse(user.isFrozen);
+        assertEquals(pharmToAdd.balance, user.balance);
         assertEquals(Pharmacist.class, user.getClass());
 
-        ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test4", "user4", "pass4", true,0, ""));
+
+        ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test4", "user4", "pass4"));
         user = ppm.login("user4", "pass4");
-        assertNull(user);
+        assertNotNull(user);
 
     }
 
@@ -71,7 +78,46 @@ class PPMTest {
     }
 
     @Test
-    public void createUserTest() throws SQLException {
+    public void issueListTest() {
+        Issue issue;
+
+        issue = ppm.addIssue("TestIssue", "This is a test");
+        assertEquals(1, ppm.issues.size());
+        assertNotNull(issue);
+
+        issue = ppm.removeIssue("TestIssue");
+        assertEquals(0, ppm.issues.size());
+        assertNotNull(issue);
+        assertEquals("TestIssue", issue.name);
+
+        ppm.addIssue("Test1", "test");
+        issue = ppm.addIssue("Test2", "test");
+        ppm.addIssue("Test3", "test");
+        assertEquals(3, ppm.issues.size());
+
+        assertTrue(ppm.solveIssue("Test2"));
+        assertFalse(ppm.solveIssue("Bad Name"));
+        assertEquals(3, ppm.issues.size());
+        assertTrue(issue.solved);
+
+        issue = ppm.removeIssue("Bad Name");
+        assertNull(issue);
+
+        ppm.clearSolvedIssues();
+        assertEquals(2, ppm.issues.size());
+        ppm.addIssue("Test2", "test");
+        assertEquals(3, ppm.issues.size());
+        ppm.clearIssues();
+        assertEquals(0, ppm.issues.size());
+
+        issue = ppm.addIssue("Blank", "");
+        assertNull(issue);
+        assertEquals(0, ppm.issues.size());
+
+    }
+
+    @Test
+    public void createUserTest() {
         String currentName = "";
         String currentUsername = "";
         String currentPassword = "";
@@ -97,6 +143,7 @@ class PPMTest {
 
         //Creating a user who already exists
         //Setup active PPM user
+
         tempP = new Pharmacist(-1, "thePharmacist", "pharmacistmain", "tempP0",0, "");
         ppm.dbConnection.addPharmacist(tempP);
         ppm.activeUser = tempP;
@@ -120,7 +167,7 @@ class PPMTest {
         //Different combinations of different types of active users trying to create different types of users
         try {
             //Client as Active User
-            tempC = new Client(-1, "theClient", "clientmain", "tempC0",0, "");
+            tempC = new Client(-1, "theClient", "clientmain", "tempC0", false);
             ppm.activeUser = tempC;
             //CANNOT create a Client
             currentName = "CMadeByC";
@@ -146,7 +193,7 @@ class PPMTest {
 
 
             //Employee as Active User
-            tempE = new Employee(-1, "theEmployee", "employeemain", "tempE0",0, "");
+            tempE = new Employee(-1, "theEmployee", "employeemain", "tempE0", 0);
             ppm.activeUser = tempE;
             //CAN create a Client
             currentName = "CMadeByE";
@@ -155,12 +202,12 @@ class PPMTest {
             tempUser = ppm.createUser(currentName, currentUsername, currentPassword, "client");
             assertEquals(tempUser.name, currentName);
             assertEquals(tempUser.username, currentUsername);
-            assertEquals(tempUser.password, currentPassword);
+            assertTrue(tempUser.isPassword(currentPassword));
             User result = ppm.dbConnection.getUserByUsernameAndPassword(currentUsername, currentPassword);
             if (result != null) {
                 assertEquals(result.name, currentName);
                 assertEquals(result.username, currentUsername);
-                assertEquals(result.password, currentPassword);
+                assertTrue(result.isPassword(currentPassword));
                 assertEquals(result.getType(), "client");
             }
             else {
@@ -193,12 +240,12 @@ class PPMTest {
             tempUser = ppm.createUser(currentName, currentUsername, currentPassword, "client");
             assertEquals(tempUser.name, currentName);
             assertEquals(tempUser.username, currentUsername);
-            assertEquals(tempUser.password, currentPassword);
+            assertTrue(tempUser.isPassword(currentPassword));
             result = ppm.dbConnection.getUserByUsernameAndPassword(currentUsername, currentPassword);
             if (result != null) {
                 assertEquals(result.name, currentName);
                 assertEquals(result.username, currentUsername);
-                assertEquals(result.password, currentPassword);
+                assertTrue(result.isPassword(currentPassword));
                 assertEquals(result.getType(), "client");
             }
             else {
@@ -212,12 +259,12 @@ class PPMTest {
             tempUser = ppm.createUser(currentName, currentUsername, currentPassword, "employee");
             assertEquals(tempUser.name, currentName);
             assertEquals(tempUser.username, currentUsername);
-            assertEquals(tempUser.password, currentPassword);
+            assertTrue(tempUser.isPassword(currentPassword));
             result = ppm.dbConnection.getUserByUsernameAndPassword(currentUsername, currentPassword);
             if (result != null) {
                 assertEquals(result.name, currentName);
                 assertEquals(result.username, currentUsername);
-                assertEquals(result.password, currentPassword);
+                assertTrue(result.isPassword(currentPassword));
                 assertEquals(result.getType(), "employee");
             }
             else {
@@ -231,12 +278,12 @@ class PPMTest {
             tempUser = ppm.createUser(currentName, currentUsername, currentPassword, "pharmacist");
             assertEquals(tempUser.name, currentName);
             assertEquals(tempUser.username, currentUsername);
-            assertEquals(tempUser.password, currentPassword);
+            assertTrue(tempUser.isPassword(currentPassword));
             result = ppm.dbConnection.getUserByUsernameAndPassword(currentUsername, currentPassword);
             if (result != null) {
                 assertEquals(result.name, currentName);
                 assertEquals(result.username, currentUsername);
-                assertEquals(result.password, currentPassword);
+                assertTrue(result.isPassword(currentPassword));
                 assertEquals(result.getType(), "pharmacist");
             }
             else {

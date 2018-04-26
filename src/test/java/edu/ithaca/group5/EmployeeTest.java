@@ -22,7 +22,7 @@ public class EmployeeTest {
     @Test
     public void unfreezeTest() {
         connection.addClient(new Client(1, "test", "user", "pass", true,0, "Allergy1"));
-        Employee employee = new Employee(2, "emp", "user2", "pass",0, "");
+        Employee employee = new Employee(2, "emp", "user2", "pass",false,0);
         User user = connection.getUserByUsername("user");
         assertTrue(user.isFrozen);
         employee.unfreezeUser("user", connection);
@@ -39,7 +39,7 @@ public class EmployeeTest {
 
         try{
             PPM tester = new PPM(true);
-            Client toDelete = new Client(123456,"test1", "un", "pw",0,"a");
+            Client toDelete = new Client(123456, "test1", "un", "pw", false);
 
             tester.dbConnection.addClient(toDelete);
             boolean isThere = tester.dbConnection.isInDB(toDelete);
