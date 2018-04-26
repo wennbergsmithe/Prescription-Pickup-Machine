@@ -41,7 +41,7 @@ public class SQLConnector implements DBConnector {
     public void addClient(Client client) {
         try {
             Statement statement = connection.createStatement();
-            statement.execute("INSERT INTO user (name, username, password, type, isFrozen, salt, allergies) VALUES ('" + client.name + "', '" +
+            statement.execute("INSERT INTO user (name, username, password, type, isFrozen, salt, allergies, balance) VALUES ('" + client.name + "', '" +
                     client.username + "', '" + client.password + "', " + "'client', " + client.isFrozen +  ", '" + client.passwordSalt + "', '" + client.allergies + "', " + client.balance +")");
             statement.close();
         } catch (SQLException e) {
