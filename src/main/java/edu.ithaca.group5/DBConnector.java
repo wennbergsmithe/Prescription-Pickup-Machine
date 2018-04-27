@@ -92,6 +92,8 @@ public interface DBConnector {
 
     void unfreezeUser(User user);
 
+    void updatePassword(User user);
+
 
     /**
      * returns an array of orders fron the database

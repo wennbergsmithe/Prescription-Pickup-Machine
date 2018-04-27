@@ -1,6 +1,8 @@
 package edu.ithaca.group5;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,5 +33,10 @@ class PharmacistTest {
     void createOrderPrice(){
         Order theOrder  = thePharm.createOrder(0,"A Drug", aClient, 2.00,"allergy1,allergy2,allergy3");
         assertEquals(2.00,theOrder.price, "Constructor doesn't set Price");
+    }
+    @Test
+    void resetPassword() {
+        thePharm.resetPassword(aClient, "newPass");
+        assertTrue(aClient.isPassword("newPass"));
     }
 }
