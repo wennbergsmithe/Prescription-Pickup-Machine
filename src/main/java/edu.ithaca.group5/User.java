@@ -42,11 +42,15 @@ public class User {
         this.username = username;
         this.balance = balance;
         this.isFrozen = isFrozen;
+        setPassword(password);
 
+    }
+
+    public void setPassword(String pass) {
         Random random = new Random();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
-        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
+        KeySpec spec = new PBEKeySpec(pass.toCharArray(), salt, 65536, 128);
         try {
             SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             byte[] hash = f.generateSecret(spec).getEncoded();

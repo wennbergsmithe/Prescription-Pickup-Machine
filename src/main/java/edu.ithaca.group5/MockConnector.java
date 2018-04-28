@@ -142,6 +142,16 @@ public class MockConnector implements DBConnector {
     }
 
     @Override
+    public void updatePassword(User user) {
+        for (User u : users) {
+            if (u.id == user.id) {
+                u.passwordSalt = user.passwordSalt;
+                u.password = user.password;
+            }
+        }
+    }
+
+    @Override
     public List<Order> getOrders() {return prescriptions;}
 
 

@@ -294,4 +294,24 @@ class PPMTest {
             System.out.println("Error in createUser testing code: redundant usernames!");
         }
     }
+
+    @Test
+    public void resetPassword() throws NotAuthorizedException {
+        ppm.activeUser = new Client(-1, "djskl", "sdjfkld", "sdjfkls", false);
+        assertThrows(NotAuthorizedException.class, () -> ppm.resetPassword(ppm.activeUser, ""));
+        ppm.activeUser = new Employee(-1, "djskl", "sdjfkld", "sdjfkls", 0);
+        assertThrows(NotAuthorizedException.class, () -> ppm.resetPassword(ppm.activeUser, ""));
+
+        ppm.dbConnection.addPharmacist(new Pharmacist(1, "test", "test1", "test2"));
+        ppm.dbConnection.addPharmacist(new Pharmacist(1, "test1", "test2", "test3"));
+
+
+
+        ppm.login("test1", "test2");
+        User toChange = ppm.dbConnection.getUserByUsername("test2");
+
+        ppm.resetPassword(toChange, "NEWPASS");
+        toChange = ppm.dbConnection.getUserByUsername("test2");
+        assertTrue(toChange.isPassword("NEWPASS"));
+    }
 }

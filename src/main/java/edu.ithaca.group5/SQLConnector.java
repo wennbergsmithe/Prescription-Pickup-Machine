@@ -286,6 +286,18 @@ public class SQLConnector implements DBConnector {
     }
 
     @Override
+    public void updatePassword(User user) {
+        try {
+            Statement statement = connection.createStatement();
+            statement.execute("UPDATE user SET password = '" + user.password + "', salt = '" + user.passwordSalt + "' WHERE id = " + user.id);
+
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public List<Order> getOrders() {
         List<Order> orders = new ArrayList<>();
 

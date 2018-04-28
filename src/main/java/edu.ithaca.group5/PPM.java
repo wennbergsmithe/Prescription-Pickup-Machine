@@ -7,6 +7,9 @@ class UsernameTakenException extends Exception {
     String desiredName;
 }
 
+class NotAuthorizedException extends Exception {
+}
+
 public class PPM {
     DBConnector dbConnection;
     User activeUser;
@@ -732,5 +735,20 @@ public class PPM {
             System.out.println("Error regarding SQL Database");
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Change the password of the user argument.
+     * @param user the user to change
+     * @param newPass the new password
+     * @throws NotAuthorizedException if the active user is not a pharmacist.
+     */
+    public void resetPassword(User user, String newPass) throws NotAuthorizedException {
+        if (activeUser.getClass() != Pharmacist.class) {
+            throw new NotAuthorizedException();
+        }
+
+        ((Pharmacist)activeUser).resetPassword(user, newPass);
+        dbConnection.updatePassword(user);
     }
 }
