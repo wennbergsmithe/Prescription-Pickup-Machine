@@ -15,7 +15,7 @@ class PPMTest {
 
     @BeforeAll
     public void setup() throws SQLException {
-        ppm = new PPM(true);
+        ppm = new PPM(false);
         ppm.dbConnection.emptyOrderTable();
         ppm.dbConnection.emptyUserTable();
     }
@@ -317,7 +317,7 @@ class PPMTest {
 
     @Test
     public void returnOrder() {
-        Client client = new Client(2344278, "test", "testu", "testp", false);
+        Client client = new Client(1, "test", "testu", "testp", false);
         ppm.dbConnection.addClient(client);
         ppm.activeUser = client;
         ppm.dbConnection.addOrder("test order", "testu", 5, "n/a");
