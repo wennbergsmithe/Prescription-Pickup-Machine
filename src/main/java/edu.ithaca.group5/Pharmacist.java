@@ -30,5 +30,9 @@ public class Pharmacist extends Employee {
         Order theOrder = new Order( inId, inName, inClient, inPrice, inWarnings);
         return theOrder;
     }
+
+    public void resetPassword(User user, String newPassword) {
+        user.setPassword(newPassword);
+    }
 }
 
