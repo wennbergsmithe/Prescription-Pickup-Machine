@@ -9,8 +9,9 @@ public class Order {
     double price;
     boolean paid;
     String warnings;
+    String nextRefill;
 
-    Order(long inId, String inName, Client inClient, double inPrice, String inWarnings){
+    Order(long inId, String inName, Client inClient, double inPrice, String inWarnings, String inNextRefill){
         this.id = inId;
         this.name = inName;
         this.client = inClient;
@@ -18,6 +19,7 @@ public class Order {
         this.price = inPrice;
         this.paid = false;
         this.warnings = inWarnings;
+        this.nextRefill = inNextRefill;
     }
 
     public long getId(){
@@ -44,6 +46,10 @@ public class Order {
         return warnings;
     }
 
+    public String getNextRefill() {
+        return nextRefill;
+    }
+
     public void setId(long id) {
         this.id = id;
     }
@@ -68,13 +74,18 @@ public class Order {
         this.warnings = warnings;
     }
 
+    public void setNextRefill(String refillDate){
+        this.nextRefill = refillDate;
+    }
+
     public String orderDetails(){
         String details = "Order ID: " + id + "\n"
                 + "Perscription: " + name + "\n"
                 + "Client: " + client.name + "\n"
                 + "Ready: " + isValidated + "\n"
                 + "Price: " + price + "\n"
-                + "DO NOT TAKE IF ALLERGIC TO: " + warnings;
+                + "DO NOT TAKE IF ALLERGIC TO: " + warnings + "\n"
+                + "NEXT REFILL DATE: " + nextRefill;
         return details;
     }
 
