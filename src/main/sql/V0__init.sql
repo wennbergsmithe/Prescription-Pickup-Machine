@@ -6,7 +6,7 @@ create table user (
 	balance         double,
 	type			enum('client', 'employee', 'pharmacist'),
 	isFrozen	BOOL DEFAULT FALSE,
-	salt			varchar(255),
+	salt			varchagur(255),
 	allergies       varchar(255),
 	constraint pk_user primary key (id)
 );
@@ -19,6 +19,7 @@ create table prescription (
 	price			double,
 	paid            tinyint(1) default 0,
 	warnings        varchar(255),
+	easy_open       BOOL DEFAULT FALSE,
 	constraint pk_order primary key(id)
 );
 

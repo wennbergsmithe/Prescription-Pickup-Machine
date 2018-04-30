@@ -44,6 +44,8 @@ public class Employee extends User {
         return client;
     }
 
+
+
     public void unfreezeUser(String username, DBConnector connection) {
         User user = connection.getUserByUsername(username);
         unfreezeUser(user, connection);

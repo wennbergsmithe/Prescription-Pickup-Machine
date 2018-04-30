@@ -9,8 +9,9 @@ public class Order {
     double price;
     boolean paid;
     String warnings;
+    boolean easyOpen;
 
-    Order(long inId, String inName, Client inClient, double inPrice, String inWarnings){
+    Order(long inId, String inName, Client inClient, double inPrice, String inWarnings, boolean easyOpen){
         this.id = inId;
         this.name = inName;
         this.client = inClient;
@@ -18,6 +19,7 @@ public class Order {
         this.price = inPrice;
         this.paid = false;
         this.warnings = inWarnings;
+        this.easyOpen = easyOpen;
     }
 
     public long getId(){
@@ -50,6 +52,16 @@ public class Order {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * allows to switch to the easy open caps
+     * @param easyOpen new boolean for easyOpen
+     * @param connection connection type
+     */
+    public void updateOrderCaps(boolean easyOpen, DBConnector connection){
+        connection.updateEasyOpen(this,easyOpen);
+        this.easyOpen = easyOpen;
     }
 
     public void setClient(Client client) {

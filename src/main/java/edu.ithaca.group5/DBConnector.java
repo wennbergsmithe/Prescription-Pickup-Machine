@@ -28,9 +28,10 @@ public interface DBConnector {
      * @param username Username of the client who will be given the order
      * @param inPrice Price of the order
      * @param inWarnings List of allergy warnings for the order
+     * @param easyOpen boolean if the prescription needs to have easy open caps
      * @return the created order, or null if there was an error
      */
-    Order addOrder(String inName, String username, double inPrice, String inWarnings);
+    Order addOrder(String inName, String username, double inPrice, String inWarnings, boolean easyOpen);
 
     /**
      * removes a client from the database
@@ -93,6 +94,8 @@ public interface DBConnector {
     void unfreezeUser(User user);
 
     void updatePassword(User user);
+
+    void updateEasyOpen(Order order, boolean newBool);
 
 
     /**

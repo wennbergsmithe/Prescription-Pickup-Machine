@@ -30,11 +30,11 @@ public class MockConnector implements DBConnector {
     }
 
     @Override
-    public Order addOrder(String inName, String username, double inPrice, String inWarnings) {
+    public Order addOrder(String inName, String username, double inPrice, String inWarnings, boolean easyOpen) {
         //Client client = new Client(-1, username, username, "none", false);
         Client client = new Client(-1, inName, username, "none", false);
 
-        Order ordertoadd = new Order(prescriptions.size(), inName, client, inPrice, inWarnings);
+        Order ordertoadd = new Order(prescriptions.size(), inName, client, inPrice, inWarnings, easyOpen);
         prescriptions.add(ordertoadd);
 
         return null;
@@ -147,6 +147,15 @@ public class MockConnector implements DBConnector {
             if (u.id == user.id) {
                 u.passwordSalt = user.passwordSalt;
                 u.password = user.password;
+            }
+        }
+    }
+
+    @Override
+    public void updateEasyOpen(Order order, boolean newBool) {
+        for(Order p : prescriptions){
+            if(p.id == order.id){
+                p.easyOpen = newBool;
             }
         }
     }

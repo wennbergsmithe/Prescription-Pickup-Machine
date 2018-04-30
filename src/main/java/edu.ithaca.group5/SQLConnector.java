@@ -50,7 +50,7 @@ public class SQLConnector implements DBConnector {
     }
 
     @Override
-    public Order addOrder(String inName, String username, double inPrice, String inWarnings) {
+    public Order addOrder(String inName, String username, double inPrice, String inWarnings, boolean easyOpen) {
         return null;
     }
 
@@ -175,6 +175,7 @@ public class SQLConnector implements DBConnector {
                 boolean isVal = rslt.getBoolean("is_validated");
                 double price = rslt.getDouble("price");
                 String warnings = rslt.getString("warnings");
+                boolean easyOpen = rslt.getBoolean("easy_open");
 
                 ResultSet results = statement.executeQuery("SELECT * FROM user where id=" + clientId);
                 if(results.next()){
@@ -183,7 +184,7 @@ public class SQLConnector implements DBConnector {
                             results.getDouble("balance"), results.getBoolean("isFrozen"),
                             results.getString("salt"), results.getString("allergies"));
 
-                    Order currentOrder = new Order(id,name,client,price,warnings);
+                    Order currentOrder = new Order(id,name,client,price,warnings,easyOpen);
                     orders.add(currentOrder);
                 }
             }
@@ -224,7 +225,8 @@ public class SQLConnector implements DBConnector {
                     String name = resultSet.getString("name");
                     double price = resultSet.getDouble("price");
                     String warnings = resultSet.getString("warnings");
-                    Order toReturn = new Order(orderId,name,client,price,warnings);
+                    boolean easyOpen = resultSet.getBoolean("easy_open");
+                    Order toReturn = new Order(orderId,name,client,price,warnings, easyOpen);
                     statement.close();
                     return toReturn;
                 }
@@ -298,6 +300,17 @@ public class SQLConnector implements DBConnector {
     }
 
     @Override
+    public void updateEasyOpen(Order order, boolean newBool) {
+        try {
+            Statement statement = connection.createStatement();
+            statement.execute("UPDATE prescription SET easy_open = "+ newBool +" where id = " + order.id);
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public List<Order> getOrders() {
         List<Order> orders = new ArrayList<>();
 
@@ -314,6 +327,7 @@ public class SQLConnector implements DBConnector {
                 boolean isFrozen = rslt.getBoolean("isFrozen");
                 String allergies = rslt.getString("allergies");
                 double balance = rslt.getDouble("balance");
+                boolean easyOpen = rslt.getBoolean("easy_open");
 
 
                 ResultSet results = statement.executeQuery("SELECT id, name, username, password, type FROM user where id=" + clientId);
@@ -322,7 +336,7 @@ public class SQLConnector implements DBConnector {
                             results.getString("username"), results.getString("password"),
                             results.getDouble("balance"), results.getBoolean("isFrozen"),
                             results.getString("salt"), results.getString("allergies"));
-                    Order currentOrder = new Order(id,name,client,price,warnings);
+                    Order currentOrder = new Order(id,name,client,price,warnings, easyOpen);
                     orders.add(currentOrder);
                 }
             }

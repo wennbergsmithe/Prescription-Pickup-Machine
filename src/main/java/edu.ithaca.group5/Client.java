@@ -40,6 +40,10 @@ public class Client extends User {
         }
     }
 
+
+
+
+
     /**
      * Takes in a String of an allergy to be removed from 'allergies'.
      * If it is not in the string then 'toRemove' is returned. If it

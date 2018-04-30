@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class OrderTest {
     Client theClient = new Client(0,"John", "johnDoe", "1234", false,0,"allergy2");
-    Order theOrder = new Order(0,"Drug A", theClient, 2.99, "allergy1,allergy2,allergy3" );
+    Order theOrder = new Order(0,"Drug A", theClient, 2.99, "allergy1,allergy2,allergy3" ,false);
 
     @Test
     void orderDetails() {
@@ -91,5 +91,16 @@ class OrderTest {
     }
 
 
-
+    @Test
+    void updateOrderCaps() {
+        try{
+            PPM test = new PPM(true);
+            assertFalse(theOrder.easyOpen);
+            test.dbConnection.addOrder("order", "un",12.0,"none",false);
+            theOrder.updateOrderCaps(true, test.dbConnection);
+            assertTrue(test.dbConnection.getOrderByNameAndUsername("order","un").easyOpen);
+        } catch (java.sql.SQLException e){
+            e.printStackTrace();
+        }
+    }
 }
