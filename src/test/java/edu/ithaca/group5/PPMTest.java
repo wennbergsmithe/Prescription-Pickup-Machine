@@ -314,4 +314,20 @@ class PPMTest {
         toChange = ppm.dbConnection.getUserByUsername("test2");
         assertTrue(toChange.isPassword("NEWPASS"));
     }
+
+    @Test
+    public void returnOrder() {
+        Client client = new Client(1, "test", "testu", "testp", false);
+        ppm.dbConnection.addClient(client);
+        ppm.activeUser = client;
+        ppm.dbConnection.addOrder("test order", "testu", 5, "n/a");
+        Order o = ppm.dbConnection.getOrderByNameAndUsername("test order", "testu");
+        ppm.dbConnection.setPaidTrue(o);
+        assertTrue(ppm.returnOrder(o));
+
+        assertEquals(ppm.activeUser.balance, 5);
+        o = new Order(324728, "sjdklfds", new Client(22342, "sjdksl", "sdjflds", "sdfjksl", false), 3, "sfjdkl");
+        assertFalse(ppm.returnOrder(o));
+
+    }
 }
