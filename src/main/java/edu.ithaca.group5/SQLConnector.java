@@ -52,6 +52,20 @@ public class SQLConnector implements DBConnector {
     @Override
     public Order addOrder(String inName, String username, double inPrice, String inWarnings, boolean easyOpen) {
         return null;
+
+    public Order addOrder(String inName, String username, double inPrice, String inWarnings) {
+        long userid = getIDByUsername(username);
+        try {
+            Statement statement = connection.createStatement();
+            String sql = "INSERT INTO prescription (name, client_id, is_validated, price, paid, warnings) VALUES ('" + inName + "', " + userid + ", 0, " + inPrice + ", 0, '" + inWarnings + "')";
+            statement.execute(sql);
+            return getOrderByNameAndUsername("inName", "username");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
     public boolean isInDB(Client toCheck){
@@ -87,6 +101,41 @@ public class SQLConnector implements DBConnector {
             e.printStackTrace();
         }
         return clientToRemove;
+    }
+
+    @Override
+    public boolean returnOrder(Order order) {
+        try {
+
+            Statement checkState = connection.createStatement();
+            String checkSql = "SELECT * FROM prescription WHERE id=" + order.id + " and paid=0";
+            ResultSet results = checkState.executeQuery(checkSql);
+            if (!results.next()) return false;
+
+
+
+            Statement statement = connection.createStatement();
+            String sql = "UPDATE prescription SET paid=0 WHERE id=" + order.id;
+            statement.execute(sql);
+            statement.close();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    @Override
+    public void setPaidTrue(Order order) {
+        try {
+            Statement statement = connection.createStatement();
+            String sql = "UPDATE prescription SET paid=1 WHERE id=" + order.id;
+            statement.execute(sql);
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -205,10 +254,11 @@ public class SQLConnector implements DBConnector {
             int id = getIDByUsername(username);
 
             if(id != -1){
-                ResultSet resultSet = statement.executeQuery("SELECT 1 FROM prescription WHERE client_id=" + id + " AND name='" + orderName + "'");
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM prescription WHERE client_id=" + id + " AND name='" + orderName + "'");
 
+                Statement statement1 = connection.createStatement();
 
-                ResultSet results = statement.executeQuery("SELECT * FROM user where id=" + id);
+                ResultSet results = statement1.executeQuery("SELECT * FROM user where id=" + id);
                 Client client;
 
                 if(results.next()) {
@@ -221,7 +271,7 @@ public class SQLConnector implements DBConnector {
                     return null;
                 }
                 if (resultSet.next()){
-                    int orderId = resultSet.getInt("id");
+                    long orderId = resultSet.getLong("id");
                     String name = resultSet.getString("name");
                     double price = resultSet.getDouble("price");
                     String warnings = resultSet.getString("warnings");
@@ -304,6 +354,11 @@ public class SQLConnector implements DBConnector {
         try {
             Statement statement = connection.createStatement();
             statement.execute("UPDATE prescription SET easy_open = "+ newBool +" where id = " + order.id);
+
+    public void updateBalance(User user) {
+        try {
+            Statement statement = connection.createStatement();
+            statement.execute("UPDATE user SET balance = " + user.balance + " WHERE id = " + user.id);
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();

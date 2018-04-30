@@ -4,6 +4,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class PharmacistTest {
@@ -33,6 +36,15 @@ class PharmacistTest {
     void createOrderPrice(){
         Order theOrder  = thePharm.createOrder(0,"A Drug", aClient, 2.00,"allergy1,allergy2,allergy3",false);
         assertEquals(2.00,theOrder.price, "Constructor doesn't set Price");
+    }
+    @Test
+    void loadOrdersToPPMTest() throws SQLException {
+        Order theOrder = thePharm.createOrder(0, "Test", aClient, 2.00, "side effects may inclde...");
+        ArrayList<Order> orders = new ArrayList<Order>();
+        orders.add(theOrder);
+        PPM thePPM = new PPM(true);
+        thePharm.loadOrdersToPPM(orders, thePPM);
+        thePharm.viewOrders(thePPM);
     }
     @Test
     void resetPassword() {

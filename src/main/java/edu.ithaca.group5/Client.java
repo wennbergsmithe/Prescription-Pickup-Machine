@@ -22,7 +22,6 @@ public class Client extends User {
     public void addFunds(double amount){
         balance += amount;
     }
-
     /**
      *  Takes in a String of an allergy to be added to 'allergies' String.
      *  If the allergy is already in the String, 'toAdd' is returned. If

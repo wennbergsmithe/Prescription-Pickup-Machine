@@ -39,6 +39,14 @@ public interface DBConnector {
      */
     Client removeClient(Client clientToRemove);
 
+    /**
+     * Sets paid to false in db.
+     * @return true if the order exists and had already been paid for. false otherwise
+     */
+    boolean returnOrder(Order order);
+
+    void setPaidTrue(Order order);
+
 
     /**
      * checks to see if the specified client is in the database
@@ -95,7 +103,11 @@ public interface DBConnector {
 
     void updatePassword(User user);
 
+
     void updateEasyOpen(Order order, boolean newBool);
+
+    void updateBalance(User user);
+
 
 
     /**

@@ -250,6 +250,7 @@ public class PPM {
         issues.clear();
     }
 
+
     private static void printBreak() {
         System.out.println("----------------------------------------------------------");
     }
@@ -737,6 +738,7 @@ public class PPM {
         }
     }
 
+
     /**
      * Change the password of the user argument.
      * @param user the user to change
@@ -750,5 +752,25 @@ public class PPM {
 
         ((Pharmacist)activeUser).resetPassword(user, newPass);
         dbConnection.updatePassword(user);
+    }
+
+    public boolean returnOrder(String orderName) {
+        Order order = dbConnection.getOrderByNameAndUsername(orderName, activeUser.username);
+        return returnOrder(order);
+    }
+
+    /**
+     * Sets the orders paid to false and returns price to the user's balance
+     * @param order
+     * @return false if the user isn't a client or if the order was not the user's
+     */
+    public boolean returnOrder(Order order) {
+        if(activeUser.getClass() != Client.class) return false;
+        if (order.client.id != activeUser.id) return false;
+
+        dbConnection.returnOrder(order);
+        ((Client)activeUser).addFunds(order.price);
+        dbConnection.updateBalance(activeUser);
+        return true;
     }
 }

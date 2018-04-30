@@ -1,5 +1,7 @@
 package edu.ithaca.group5;
 
+import java.util.ArrayList;
+
 public class Pharmacist extends Employee {
 
 
@@ -30,7 +32,11 @@ public class Pharmacist extends Employee {
         Order theOrder = new Order( inId, inName, inClient, inPrice, inWarnings, easyOpen);
         return theOrder;
     }
-
+    public void loadOrdersToPPM(ArrayList<Order> orders, PPM thePPM) {
+        for (int i = 0; i < orders.size(); i++) {
+            thePPM.loadOrder(orders.get(i));
+        }
+    }
     public void resetPassword(User user, String newPassword) {
         user.setPassword(newPassword);
     }
