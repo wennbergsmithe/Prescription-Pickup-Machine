@@ -15,7 +15,7 @@ class PPMTest {
 
     @BeforeAll
     public void setup() throws SQLException {
-        ppm = new PPM(false);
+        ppm = new PPM(true);
         ppm.dbConnection.emptyOrderTable();
         ppm.dbConnection.emptyUserTable();
     }
