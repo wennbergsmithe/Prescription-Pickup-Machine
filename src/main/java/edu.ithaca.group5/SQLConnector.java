@@ -89,6 +89,41 @@ public class SQLConnector implements DBConnector {
         return clientToRemove;
     }
 
+    @Override
+    public boolean returnOrder(Order order) {
+        try {
+
+            Statement checkState = connection.createStatement();
+            String checkSql = "SELECT 1 FROM prescription WHERE (id, paid) VALUES (" + order.id + ", 0)";
+            ResultSet results = checkState.executeQuery(checkSql);
+            if (!results.next()) return false;
+
+
+
+            Statement statement = connection.createStatement();
+            String sql = "UPDATE prescription SET paid=0 WHERE id=" + order.id;
+            statement.execute(sql);
+            statement.close();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    @Override
+    public void setPaidTrue(Order order) {
+        try {
+            Statement statement = connection.createStatement();
+            String sql = "UPDATE prescription SET paid=1 WHERE id=" + order.id;
+            statement.execute(sql);
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public User getUserByUsernameAndPassword(String username, String password) {
@@ -290,6 +325,18 @@ public class SQLConnector implements DBConnector {
         try {
             Statement statement = connection.createStatement();
             statement.execute("UPDATE user SET password = '" + user.password + "', salt = '" + user.passwordSalt + "' WHERE id = " + user.id);
+
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void updateBalance(User user) {
+        try {
+            Statement statement = connection.createStatement();
+            statement.execute("UPDATE user SET balance = " + user.balance + " WHERE id = " + user.id);
 
             statement.close();
         } catch (SQLException e) {

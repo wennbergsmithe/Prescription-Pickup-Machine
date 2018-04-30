@@ -32,18 +32,40 @@ public class MockConnector implements DBConnector {
     @Override
     public Order addOrder(String inName, String username, double inPrice, String inWarnings) {
         //Client client = new Client(-1, username, username, "none", false);
-        Client client = new Client(-1, inName, username, "none", false);
+        User u = getUserByUsername(username);
+        if (u.getClass() != Client.class) return null;
+        Client client = (Client)u;
 
         Order ordertoadd = new Order(prescriptions.size(), inName, client, inPrice, inWarnings);
         prescriptions.add(ordertoadd);
 
-        return null;
+        return ordertoadd;
     }
 
     @Override
     public Client removeClient(Client clientToRemove){
         users.remove(clientToRemove);
         return clientToRemove;
+    }
+
+    @Override
+    public boolean returnOrder(Order order) {
+        for (Order pres : prescriptions) {
+            if (pres.id == order.id) {
+                pres.paid = false;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void setPaidTrue(Order order) {
+        for (Order o : prescriptions) {
+            if (o.id == order.id) {
+                o.paid = true;
+            }
+        }
     }
 
     public boolean isInDB(Client toCheck){
@@ -147,6 +169,16 @@ public class MockConnector implements DBConnector {
             if (u.id == user.id) {
                 u.passwordSalt = user.passwordSalt;
                 u.password = user.password;
+            }
+        }
+    }
+
+    @Override
+    public void updateBalance(User user) {
+        for (User u : users) {
+            if (u.id == user.id) {
+                u.balance = user.balance;
+                return;
             }
         }
     }
