@@ -20,7 +20,7 @@ class RobotTest {
         dbConnector = new MockConnector();
         dbConnector.emptyOrderTable();
         dbConnector.emptyUserTable();
-        robot = new Robot(dbConnector);
+        robot = new Robot(dbConnector, 5000);
     }
 
     @AfterAll

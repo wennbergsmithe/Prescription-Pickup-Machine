@@ -5,15 +5,18 @@ public class Robot{
     Thread thread;
     DBConnector dbConnector;
     boolean running;
-    public Robot(DBConnector dbConnector) {
+    int sleepTime;
+
+    public Robot(DBConnector dbConnector, int sleepTime) {
         this.dbConnector = dbConnector;
+        this.sleepTime = sleepTime;
     }
 
     public void validateOrders() {
         while(running) {
             dbConnector.validateAllOrders();
             try {
-                Thread.sleep(5000);
+                Thread.sleep(sleepTime);
             } catch (InterruptedException e) {
                 running = false;
                 System.out.println("Robot shutting down.");
