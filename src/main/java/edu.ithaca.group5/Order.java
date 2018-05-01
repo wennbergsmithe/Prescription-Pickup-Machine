@@ -10,6 +10,7 @@ public class Order {
     boolean paid;
     String warnings;
     String nextRefill;
+    String badCombos = "allergy1&allergy3,allergy2&allergy1,allergy3&allergy4";
 
     Order(long inId, String inName, Client inClient, double inPrice, String inWarnings, String inNextRefill){
         this.id = inId;
@@ -150,6 +151,37 @@ public class Order {
             if (!clientAller[i].equals("")) {
                 if (warnings.contains(clientAller[i])) {
                     return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean checkAgainstOthers(Order secondOrder){
+        String[] toCheck = badCombos.split(",");
+        String[] orderOne = warnings.split(",");
+        String[] orderTwo = secondOrder.warnings.split(",");
+
+        int maxSize;
+        int minSize;
+
+        if(orderOne.length > orderTwo.length){
+            maxSize = orderOne.length;
+            minSize = orderTwo.length;
+        }else {
+            maxSize = orderTwo.length;
+            minSize = orderOne.length;
+        }
+
+        for(int i = 0; i < toCheck.length; i++){
+            if(!toCheck[i].equals("")){
+                for(int x = 0; x < maxSize; i++){
+                    for(int y = 0; y < minSize; i++){
+                        if((toCheck[i].contains(orderOne[x]))&&(toCheck[i].contains(orderTwo[y]))){
+                            return true;
+                        }
+                    }
+
                 }
             }
         }

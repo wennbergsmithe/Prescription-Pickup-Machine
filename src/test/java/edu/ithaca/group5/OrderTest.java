@@ -90,6 +90,12 @@ class OrderTest {
         assertEquals(false,theOrder.checkAllergies(),"finds allergy where there is none");
     }
 
+    @Test
+    void refillTest(){
+        theOrder.setNextRefill("12/12/2012");
+        assertEquals("12/12/2012",theOrder.nextRefill, "Does not set date properly");
+    }
+
 
 
 }
