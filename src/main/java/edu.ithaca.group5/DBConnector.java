@@ -30,7 +30,7 @@ public interface DBConnector {
      * @param inWarnings List of allergy warnings for the order
      * @return the created order, or null if there was an error
      */
-    Order addOrder(String inName, String username, double inPrice, String inWarnings);
+    Order addOrder(String inName, String username, double inPrice, String inWarnings, String inRefillDate);
 
     /**
      * removes a client from the database
