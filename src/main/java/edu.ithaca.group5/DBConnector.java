@@ -104,6 +104,8 @@ public interface DBConnector {
 
     void updateBalance(User user);
 
+    void validateAllOrders();
+
 
     /**
      * returns an array of orders fron the database

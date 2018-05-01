@@ -184,6 +184,13 @@ public class MockConnector implements DBConnector {
     }
 
     @Override
+    public void validateAllOrders() {
+        for (Order order : prescriptions) {
+            order.isValidated = true;
+        }
+    }
+
+    @Override
     public List<Order> getOrders() {return prescriptions;}
 
 
