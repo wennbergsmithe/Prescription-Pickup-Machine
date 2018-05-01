@@ -96,6 +96,14 @@ class OrderTest {
         assertEquals("12/12/2012",theOrder.nextRefill, "Does not set date properly");
     }
 
+    @Test
+    void comboTest1(){
+        Order orderTwo = new Order(1,"Drug B", theClient, 3.99, "allergy5","1/1/2001" );
+        boolean check = theOrder.checkAgainstOthers(orderTwo);
+        assertEquals(false,check, "Recognizes match when there is none");
+
+    }
+
 
 
 }
