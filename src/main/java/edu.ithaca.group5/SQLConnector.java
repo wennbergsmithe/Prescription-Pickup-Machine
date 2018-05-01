@@ -54,7 +54,7 @@ public class SQLConnector implements DBConnector {
         long userid = getIDByUsername(username);
         try {
             Statement statement = connection.createStatement();
-            String sql = "INSERT INTO prescription (name, client_id, is_validated, price, paid, warnings,nextRefill) VALUES ('" + inName + "', " + userid + ", 0, " + inPrice + ", 0, '" + inWarnings + "', "+ inRefillDate + "')";
+            String sql = "INSERT INTO prescription (name, client_id, is_validated, price, paid, warnings,nextRefill) VALUES ('" + inName + "', " + userid + ", 0, " + inPrice + ", 0, '" + inWarnings + "', '"+ inRefillDate + "')";
             statement.execute(sql);
             return getOrderByNameAndUsername("inName", "username");
 
@@ -358,6 +358,18 @@ public class SQLConnector implements DBConnector {
     }
 
     @Override
+    public void validateAllOrders() {
+        try {
+            Statement statement = connection.createStatement();
+            statement.execute("UPDATE prescription SET is_validated=1");
+
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public List<Order> getOrders() {
         List<Order> orders = new ArrayList<>();
 
@@ -372,18 +384,16 @@ public class SQLConnector implements DBConnector {
                 double price = rslt.getDouble("price");
                 String warnings = rslt.getString("warnings");
                 String refillDate = rslt.getString("nextRefill");
-                boolean isFrozen = rslt.getBoolean("isFrozen");
-                String allergies = rslt.getString("allergies");
-                double balance = rslt.getDouble("balance");
 
-
-                ResultSet results = statement.executeQuery("SELECT id, name, username, password, type FROM user where id=" + clientId);
+                Statement statement1 = connection.createStatement();
+                ResultSet results = statement1.executeQuery("SELECT * FROM user where id=" + clientId);
                 if(results.next()){
                     Client client = new Client(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
                             results.getDouble("balance"), results.getBoolean("isFrozen"),
                             results.getString("salt"), results.getString("allergies"));
                     Order currentOrder = new Order(id,name,client,price,warnings,refillDate);
+                    currentOrder.isValidated = isVal;
                     orders.add(currentOrder);
                 }
             }
