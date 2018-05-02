@@ -320,13 +320,13 @@ class PPMTest {
         Client client = new Client(1, "test", "testu", "testp", false);
         ppm.dbConnection.addClient(client);
         ppm.activeUser = client;
-        ppm.dbConnection.addOrder("test order", "testu", 5, "n/a");
+        ppm.dbConnection.addOrder("test order", "testu", 5, "n/a","1/1/2001");
         Order o = ppm.dbConnection.getOrderByNameAndUsername("test order", "testu");
         ppm.dbConnection.setPaidTrue(o);
         assertTrue(ppm.returnOrder(o));
 
         assertEquals(ppm.activeUser.balance, 5);
-        o = new Order(324728, "sjdklfds", new Client(22342, "sjdksl", "sdjflds", "sdfjksl", false), 3, "sfjdkl");
+        o = new Order(324728, "sjdklfds", new Client(22342, "sjdksl", "sdjflds", "sdfjksl", false), 3, "sfjdkl","1/1/2001");
         assertFalse(ppm.returnOrder(o));
 
     }

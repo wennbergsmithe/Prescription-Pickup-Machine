@@ -50,14 +50,11 @@ public class SQLConnector implements DBConnector {
     }
 
     @Override
-    public Order addOrder(String inName, String username, double inPrice, String inWarnings, boolean easyOpen) {
-        return null;
-
-    public Order addOrder(String inName, String username, double inPrice, String inWarnings) {
+    public Order addOrder(String inName, String username, double inPrice, String inWarnings,String inRefillDate, boolean easyOpen) {
         long userid = getIDByUsername(username);
         try {
             Statement statement = connection.createStatement();
-            String sql = "INSERT INTO prescription (name, client_id, is_validated, price, paid, warnings) VALUES ('" + inName + "', " + userid + ", 0, " + inPrice + ", 0, '" + inWarnings + "')";
+            String sql = "INSERT INTO prescription (name, client_id, is_validated, price, paid, warnings,nextRefill) VALUES ('" + inName + "', " + userid + ", 0, " + inPrice + ", 0, '" + inWarnings + "', '"+ inRefillDate + "')";
             statement.execute(sql);
             return getOrderByNameAndUsername("inName", "username");
 
@@ -224,6 +221,7 @@ public class SQLConnector implements DBConnector {
                 boolean isVal = rslt.getBoolean("is_validated");
                 double price = rslt.getDouble("price");
                 String warnings = rslt.getString("warnings");
+                String refillDate = rslt.getString("nextRefill");
                 boolean easyOpen = rslt.getBoolean("easy_open");
 
                 ResultSet results = statement.executeQuery("SELECT * FROM user where id=" + clientId);
@@ -233,7 +231,9 @@ public class SQLConnector implements DBConnector {
                             results.getDouble("balance"), results.getBoolean("isFrozen"),
                             results.getString("salt"), results.getString("allergies"));
 
-                    Order currentOrder = new Order(id,name,client,price,warnings,easyOpen);
+
+                    Order currentOrder = new Order(id,name,client,price,warnings,refillDate, easyOpen);
+
                     orders.add(currentOrder);
                 }
             }
@@ -275,8 +275,9 @@ public class SQLConnector implements DBConnector {
                     String name = resultSet.getString("name");
                     double price = resultSet.getDouble("price");
                     String warnings = resultSet.getString("warnings");
+                    String refillDate = resultSet.getString("nextRefill");
                     boolean easyOpen = resultSet.getBoolean("easy_open");
-                    Order toReturn = new Order(orderId,name,client,price,warnings, easyOpen);
+                    Order toReturn = new Order(orderId,name,client,price,warnings,refillDate, easyOpen);
                     statement.close();
                     return toReturn;
                 }
@@ -366,6 +367,18 @@ public class SQLConnector implements DBConnector {
     }
 
     @Override
+    public void validateAllOrders() {
+        try {
+            Statement statement = connection.createStatement();
+            statement.execute("UPDATE prescription SET is_validated=1");
+
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public List<Order> getOrders() {
         List<Order> orders = new ArrayList<>();
 
@@ -379,19 +392,22 @@ public class SQLConnector implements DBConnector {
                 boolean isVal = rslt.getBoolean("is_validated");
                 double price = rslt.getDouble("price");
                 String warnings = rslt.getString("warnings");
+                String refillDate = rslt.getString("nextRefill");
                 boolean isFrozen = rslt.getBoolean("isFrozen");
                 String allergies = rslt.getString("allergies");
                 double balance = rslt.getDouble("balance");
                 boolean easyOpen = rslt.getBoolean("easy_open");
 
-
-                ResultSet results = statement.executeQuery("SELECT id, name, username, password, type FROM user where id=" + clientId);
+                Statement statement1 = connection.createStatement();
+                ResultSet results = statement1.executeQuery("SELECT * FROM user where id=" + clientId);
                 if(results.next()){
                     Client client = new Client(results.getLong("id"), results.getString("name"),
                             results.getString("username"), results.getString("password"),
                             results.getDouble("balance"), results.getBoolean("isFrozen"),
                             results.getString("salt"), results.getString("allergies"));
-                    Order currentOrder = new Order(id,name,client,price,warnings, easyOpen);
+
+                    Order currentOrder = new Order(id,name,client,price,warnings,refillDate, easyOpen);
+                    currentOrder.isValidated = isVal;
                     orders.add(currentOrder);
                 }
             }

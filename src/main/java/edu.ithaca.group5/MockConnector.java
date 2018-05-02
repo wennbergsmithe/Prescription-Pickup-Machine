@@ -30,13 +30,15 @@ public class MockConnector implements DBConnector {
     }
 
     @Override
-    public Order addOrder(String inName, String username, double inPrice, String inWarnings, boolean easyOpen) {
+    public Order addOrder(String inName, String username, double inPrice, String inWarnings, String inRefillDate, boolean easyOpen) {
+
         //Client client = new Client(-1, username, username, "none", false);
         User u = getUserByUsername(username);
         if (u.getClass() != Client.class) return null;
         Client client = (Client)u;
 
-        Order ordertoadd = new Order(prescriptions.size(), inName, client, inPrice, inWarnings, easyOpen);
+        Order ordertoadd = new Order(prescriptions.size(), inName, client, inPrice, inWarnings,inRefillDate, easyOpen);
+
         prescriptions.add(ordertoadd);
 
         return ordertoadd;
@@ -186,6 +188,13 @@ public class MockConnector implements DBConnector {
                 u.balance = user.balance;
                 return;
             }
+        }
+    }
+
+    @Override
+    public void validateAllOrders() {
+        for (Order order : prescriptions) {
+            order.isValidated = true;
         }
     }
 

@@ -19,6 +19,7 @@ create table prescription (
 	price			double,
 	paid            tinyint(1) default 0,
 	warnings        varchar(255),
+  nextRefill      varchar(255),
 	easy_open       BOOL DEFAULT FALSE,
 	constraint pk_order primary key(id)
 );

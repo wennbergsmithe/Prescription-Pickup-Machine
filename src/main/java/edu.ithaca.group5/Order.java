@@ -9,9 +9,12 @@ public class Order {
     double price;
     boolean paid;
     String warnings;
-    boolean easyOpen;
 
-    Order(long inId, String inName, Client inClient, double inPrice, String inWarnings, boolean easyOpen){
+    boolean easyOpen;
+    String nextRefill;
+
+    Order(long inId, String inName, Client inClient, double inPrice, String inWarnings, String inNextRefill, boolean easyOpen){
+
         this.id = inId;
         this.name = inName;
         this.client = inClient;
@@ -20,6 +23,8 @@ public class Order {
         this.paid = false;
         this.warnings = inWarnings;
         this.easyOpen = easyOpen;
+        this.nextRefill = inNextRefill;
+
     }
 
     public long getId(){
@@ -44,6 +49,10 @@ public class Order {
 
     public String getWarnings() {
         return warnings;
+    }
+
+    public String getNextRefill() {
+        return nextRefill;
     }
 
     public void setId(long id) {
@@ -80,13 +89,18 @@ public class Order {
         this.warnings = warnings;
     }
 
+    public void setNextRefill(String refillDate){
+        this.nextRefill = refillDate;
+    }
+
     public String orderDetails(){
         String details = "Order ID: " + id + "\n"
                 + "Perscription: " + name + "\n"
                 + "Client: " + client.name + "\n"
                 + "Ready: " + isValidated + "\n"
                 + "Price: " + price + "\n"
-                + "DO NOT TAKE IF ALLERGIC TO: " + warnings;
+                + "DO NOT TAKE IF ALLERGIC TO: " + warnings + "\n"
+                + "NEXT REFILL DATE: " + nextRefill;
         return details;
     }
 

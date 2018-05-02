@@ -18,28 +18,31 @@ class PharmacistTest {
 
     @Test
     void createOrderId() {
-        Order theOrder  = thePharm.createOrder(0,"A Drug", aClient, 2.00,"allergy1,allergy2,allergy3",false);
+        Order theOrder  = thePharm.createOrder(0,"A Drug", aClient, 2.00,"allergy1,allergy2,allergy3","1/1/2001", false);
         assertEquals(0,theOrder.id, "Constructor doesn't set Id");
     }
 
     @Test
     void createOrderName(){
-        Order theOrder  = thePharm.createOrder(0,"A Drug", aClient, 2.00,"allergy1,allergy2,allergy3",false);
+        Order theOrder  = thePharm.createOrder(0,"A Drug", aClient, 2.00,"allergy1,allergy2,allergy3","1/1/2001", false);
         assertEquals("A Drug",theOrder.name, "Constructor doesn't set Name");
     }
     @Test
     void createOrderClient(){
-        Order theOrder  = thePharm.createOrder(0,"A Drug", aClient, 2.00,"allergy1,allergy2,allergy3",false);
+        Order theOrder  = thePharm.createOrder(0,"A Drug", aClient, 2.00,"allergy1,allergy2,allergy3","1/1/2001", false);
+
         assertEquals(aClient,theOrder.client, "Constructor doesn't Assign Client");
     }
     @Test
     void createOrderPrice(){
-        Order theOrder  = thePharm.createOrder(0,"A Drug", aClient, 2.00,"allergy1,allergy2,allergy3",false);
+
+        Order theOrder  = thePharm.createOrder(0,"A Drug", aClient, 2.00,"allergy1,allergy2,allergy3","1/1/2001", false);
+
         assertEquals(2.00,theOrder.price, "Constructor doesn't set Price");
     }
     @Test
     void loadOrdersToPPMTest() throws SQLException {
-        Order theOrder = thePharm.createOrder(0, "Test", aClient, 2.00, "side effects may inclde...");
+        Order theOrder = thePharm.createOrder(0, "Test", aClient, 2.00, "side effects may inclde...","1/1/2001");
         ArrayList<Order> orders = new ArrayList<Order>();
         orders.add(theOrder);
         PPM thePPM = new PPM(true);

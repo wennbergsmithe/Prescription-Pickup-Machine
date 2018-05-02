@@ -18,6 +18,7 @@ public class PPM {
     List<Order> loadedOrders = new ArrayList<Order>();
     List<Issue> issues = new ArrayList<Issue>();
     boolean justLoggedIn;
+    Robot robot;
 
     public PPM() throws SQLException {
         setupSQL();
@@ -28,6 +29,21 @@ public class PPM {
             dbConnection = new MockConnector();
         } else {
             setupSQL();
+        }
+    }
+
+    public void turnOnRobot() {
+        if (robot != null) {
+            robot.stopValidating();
+        }
+        robot = new Robot(dbConnection, 5000);
+        robot.startValidating();
+    }
+
+    public void turnOffRobot() {
+        if (robot != null) {
+            robot.stopValidating();
+            robot = null;
         }
     }
 

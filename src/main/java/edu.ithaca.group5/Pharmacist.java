@@ -28,8 +28,9 @@ public class Pharmacist extends Employee {
      * @param inPrice
      * @return theOrder
      */
-    public Order createOrder(long inId, String inName, Client inClient, double inPrice, String inWarnings, boolean easyOpen){
-        Order theOrder = new Order( inId, inName, inClient, inPrice, inWarnings, easyOpen);
+
+    public Order createOrder(long inId, String inName, Client inClient, double inPrice, String inWarnings, boolean easyOpen, String inRefillDate){
+        Order theOrder = new Order( inId, inName, inClient, inPrice, inWarnings,inRefillDate, easyOpen);
         return theOrder;
     }
     public void loadOrdersToPPM(ArrayList<Order> orders, PPM thePPM) {
