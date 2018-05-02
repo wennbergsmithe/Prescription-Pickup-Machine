@@ -2,6 +2,8 @@ package edu.ithaca.group5;
 
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ClientTest {
@@ -34,5 +36,15 @@ class ClientTest {
         theClient.removeAllergy("allergy3");
         assertEquals(false, theClient.allergies.contains("allergy3"), "Cannot remove allergy from end");
     }
-
+    @Test
+    void discontinueOrderTest() throws SQLException {
+        try {
+            PPM thePPM = new PPM(true);
+            boolean isOrderRemoved = theClient.discontinueOrder(thePPM, "Order1");
+            assertEquals(true, isOrderRemoved, "Error removing order");
+        }
+        catch (SQLException e){
+            System.out.println("Error with SQL: " + e.getLocalizedMessage());
+        }
+    }
 }

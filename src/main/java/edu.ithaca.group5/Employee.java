@@ -53,13 +53,9 @@ public class Employee extends User {
         user.isFrozen = false;
         connection.unfreezeUser(user);
     }
-
-
-
     /**
      * Prints out a list of current orders in the PPM database
      */
-
     public void viewOrders(PPM ppm){
         List<Order> list = ppm.dbConnection.getOrders();
 

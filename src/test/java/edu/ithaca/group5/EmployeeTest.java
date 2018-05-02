@@ -67,9 +67,6 @@ public class EmployeeTest {
         }catch(java.sql.SQLException e){
             e.printStackTrace();
         }
-
-
-
     }
 }
 
