@@ -178,17 +178,17 @@ public class PPMController {
                 ui.out("Enter the date for your next refill:");
                 String inRefillDate = ui.getString();
 
-                Order tempOrder = new Order(-1, "", client, 0, inWarnings,inRefillDate);
+                Order tempOrder = new Order(-1, "", client, 0, inWarnings,inRefillDate, false);
                 if (tempOrder.checkAllergies()) {
                     boolean response = ui.prompt("There's an allergy confliction with this medication!\n" +
                             "Do you still want to give this order to the client? (Y/N)");
                     if (response) {
-                            Order order = ppm.dbConnection.addOrder(inName, client.username, Double.parseDouble(inPrice), inWarnings,inRefillDate);
+                            Order order = ppm.dbConnection.addOrder(inName, client.username, Double.parseDouble(inPrice), inWarnings,inRefillDate, false);
                             client.orders.add(order);
                             ui.out("Successfully gave the order to the client");
                     }
                 } else {
-                    Order order = ppm.dbConnection.addOrder(inName, client.username, Double.parseDouble(inPrice), inWarnings,inRefillDate);
+                    Order order = ppm.dbConnection.addOrder(inName, client.username, Double.parseDouble(inPrice), inWarnings,inRefillDate, false);
                     client.orders.add(order);
                     ui.out("Successfully gave the order to the client");
                 }
