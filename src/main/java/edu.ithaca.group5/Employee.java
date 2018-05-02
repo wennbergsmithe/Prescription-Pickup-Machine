@@ -44,11 +44,21 @@ public class Employee extends User {
         return client;
     }
 
+    /**
+     * ufreezes user
+     * @param username
+     * @param connection
+     */
     public void unfreezeUser(String username, DBConnector connection) {
         User user = connection.getUserByUsername(username);
         unfreezeUser(user, connection);
     }
 
+    /**
+     * unfreezes user
+     * @param user
+     * @param connection
+     */
     public void unfreezeUser(User user, DBConnector connection) {
         user.isFrozen = false;
         connection.unfreezeUser(user);

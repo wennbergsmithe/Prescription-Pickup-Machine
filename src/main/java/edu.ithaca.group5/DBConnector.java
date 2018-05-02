@@ -96,14 +96,39 @@ public interface DBConnector {
      */
     void emptyOrderTable();
 
+    /**
+     * freezes user when password attempts exceeds 3
+     * @param user
+     */
+
     void freezeUser(User user);
+
+    /**
+     * Unfreezes user
+     * @param user
+     */
 
     void unfreezeUser(User user);
 
+    /**
+     * updates users password
+     * @param user
+     */
+
     void updatePassword(User user);
+
+
+    /**
+     * updateBalance
+     * @param user
+     */
 
     void updateBalance(User user);
 
+
+    /**
+     * validates all orders for robot
+     */
     void validateAllOrders();
 
 

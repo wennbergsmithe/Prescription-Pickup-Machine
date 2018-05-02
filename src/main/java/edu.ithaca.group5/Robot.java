@@ -12,6 +12,9 @@ public class Robot{
         this.sleepTime = sleepTime;
     }
 
+    /**
+     * validates all orders while the robot is operating
+     */
     public void validateOrders() {
         while(running) {
             dbConnector.validateAllOrders();
@@ -24,12 +27,18 @@ public class Robot{
         }
     }
 
+    /**
+     * interrupts the robot
+     */
     public void stopValidating() {
         if (thread != null && thread.isAlive()) {
             thread.interrupt();
         }
     }
 
+    /**
+     * starts the robot
+     */
     public void startValidating() {
         stopValidating();
         running = true;

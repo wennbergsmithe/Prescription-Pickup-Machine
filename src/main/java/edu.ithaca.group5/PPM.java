@@ -32,6 +32,9 @@ public class PPM {
         }
     }
 
+    /**
+     * turns on robot
+     */
     public void turnOnRobot() {
         if (robot != null) {
             robot.stopValidating();
@@ -40,6 +43,9 @@ public class PPM {
         robot.startValidating();
     }
 
+    /**
+     * turns off robot
+     */
     public void turnOffRobot() {
         if (robot != null) {
             robot.stopValidating();
@@ -47,6 +53,10 @@ public class PPM {
         }
     }
 
+    /**
+     * initiates the db connector
+     * @throws SQLException
+     */
     private void setupSQL() throws SQLException {
         // needed to register db driver
         DriverManager.registerDriver(new com.mysql.jdbc.Driver());
