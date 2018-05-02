@@ -21,7 +21,17 @@ Waffle.io: https://waffle.io/martypv/Drug-Dispenser
 <br>Sprint 3 Goal: Deliver a working and optimized system
 <br> Reverse Engineering Group 2: https://docs.google.com/document/d/1vBz5_DFn_ssJsdFNEi-g9W50_abMPLqkHvzcnlAW48E/edit?usp=sharing
 
-## Setup Notes
+## Quickstart Guide
 
-Create two MySQL databases: one for testing and one for production. Seed both of these with the most recent sql script in `src/main/sql/`.
+<b>IF PLANNING ON USING SQL:<b>
+
+Create a MySQL databases. Seed both of these with the most recent sql script in `src/main/sql/`.
 <br>Copy `src/main/java/edu.ithaca.group5/ConfigIn.java` to `src/main/java/edu.ithaca.group5/Config.java` and replace constants with proper information.
+
+Locate `libraries/mysql-connector.jar` and add it as a project library. 
+
+Open `PPMController.java` and change the instantiation of `ppm` to `new PPM()`.
+
+<b> IF NOT USING SQL: <b>
+  
+No setup required. Just run `PPMController.main()`
