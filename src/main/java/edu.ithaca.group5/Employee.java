@@ -70,4 +70,12 @@ public class Employee extends User {
             System.out.println("\n\n");
         }
     }
+
+    /*
+     *  Sends a message to MD
+     */
+
+    public void sendMDNotice(Client user, String prescriptionName, int daysBeforeRunningOut){
+        System.out.println("Sent : " + user.username + "Prescription: " + prescriptionName + "Expires in: " + daysBeforeRunningOut);
+    }
 }
