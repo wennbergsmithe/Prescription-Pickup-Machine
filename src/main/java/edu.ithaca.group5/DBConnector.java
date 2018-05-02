@@ -65,7 +65,7 @@ public interface DBConnector {
      * @param username
      * @return
      */
-    User getUserByUsername(String username);;
+    User getUserByUsername(String username);
 
     /**
      * Gets the id of the user with the given username
