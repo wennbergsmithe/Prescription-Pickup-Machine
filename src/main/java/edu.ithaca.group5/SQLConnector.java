@@ -355,6 +355,10 @@ public class SQLConnector implements DBConnector {
         try {
             Statement statement = connection.createStatement();
             statement.execute("UPDATE prescription SET easy_open = "+ newBool +" where id = " + order.id);
+            statement.close();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
 
     public void updateBalance(User user) {
         try {
