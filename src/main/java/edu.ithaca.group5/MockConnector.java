@@ -181,6 +181,9 @@ public class MockConnector implements DBConnector {
         for(Order p : prescriptions){
             if(p.id == order.id){
                 p.easyOpen = newBool;
+            }
+        }
+    }
 
     public void updateBalance(User user) {
         for (User u : users) {
