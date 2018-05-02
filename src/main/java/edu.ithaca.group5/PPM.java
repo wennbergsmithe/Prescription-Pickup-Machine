@@ -484,7 +484,7 @@ public class PPM {
                                 inWarnings = "";
                             }
 
-                            Order tempOrder = new Order(-1, "", client, 0, inWarnings, false);
+                            Order tempOrder = new Order(-1, "", client, 0, inWarnings,"1/1/2001", false);
                             if (tempOrder.checkAllergies()) {
                                 System.out.println("There's an allergy confliction with this medication!\n" +
                                         "Do you still want to give this order to the client? (Y/N)");
@@ -492,7 +492,7 @@ public class PPM {
                                 while (prompt == null) {
                                     prompt = console.nextLine();
                                     if (prompt.toLowerCase().equals("y")) {
-                                        Order order = ppm.dbConnection.addOrder(inName, client.username, Double.parseDouble(inPrice), inWarnings,false);
+                                        Order order = ppm.dbConnection.addOrder(inName, client.username, Double.parseDouble(inPrice), inWarnings,"1/1/2001",false);
                                         client.orders.add(order);
                                         System.out.println("Successfully gave the order to the client");
                                     } else if (prompt.toLowerCase().equals("n")) {
@@ -503,7 +503,7 @@ public class PPM {
                                     }
                                 }
                             } else {
-                                Order order = ppm.dbConnection.addOrder(inName, client.username, Double.parseDouble(inPrice), inWarnings,false);
+                                Order order = ppm.dbConnection.addOrder(inName, client.username, Double.parseDouble(inPrice), inWarnings,"1/1/2001",false);
                                 client.orders.add(order);
                                 System.out.println("Successfully gave the order to the client");
                             }
