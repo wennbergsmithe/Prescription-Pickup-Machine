@@ -32,11 +32,23 @@ public class Pharmacist extends Employee {
         Order theOrder = new Order( inId, inName, inClient, inPrice, inWarnings,inRefillDate);
         return theOrder;
     }
+
+    /**
+     * loads all orders to ppm
+     * @param orders
+     * @param thePPM
+     */
     public void loadOrdersToPPM(ArrayList<Order> orders, PPM thePPM) {
         for (int i = 0; i < orders.size(); i++) {
             thePPM.loadOrder(orders.get(i));
         }
     }
+
+    /**
+     * resets the users password
+     * @param user
+     * @param newPassword
+     */
     public void resetPassword(User user, String newPassword) {
         user.setPassword(newPassword);
     }

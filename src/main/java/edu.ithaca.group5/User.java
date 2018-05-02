@@ -46,6 +46,10 @@ public class User {
 
     }
 
+    /**
+     * sets user password
+     * @param pass String password
+     */
     public void setPassword(String pass) {
         Random random = new Random();
         byte[] salt = new byte[16];
@@ -65,6 +69,11 @@ public class User {
         }
     }
 
+    /**
+     * checks if the users password is the same as the input string
+     * @param password String
+     * @return true if passwords are the same
+     */
     public boolean isPassword(String password) {
         Base64.Decoder dec = Base64.getDecoder();
         byte[] salt = dec.decode(passwordSalt);
@@ -79,6 +88,14 @@ public class User {
         return false;
     }
 
+    /**
+     * encrypts the users password and salt
+     * @param password String
+     * @param salt Salt
+     * @return encrypted password
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
     public static String hashPasswordAndSalt(String password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
         SecretKeyFactory f = null;
