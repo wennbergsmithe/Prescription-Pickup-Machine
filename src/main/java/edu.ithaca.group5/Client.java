@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Client extends User {
+    List<Order> discontinuedOrders;
     List<Order> orders;
 
     public Client(long id, String name, String username, String password, boolean isFrozen, double balance,String allergies) {
@@ -66,5 +67,30 @@ public class Client extends User {
         }
 
     }
-
+    /**
+     * Takes in a String of an order name to be removed
+     * If it is not in the string then the boolean value false is returned. If it
+     * is in the String then the order is removed and true is then returned.
+     * @param thePPM PPM where order is
+     * @param orderName Order to be removed.
+     * @return Boolean
+     */
+    public boolean discontinueOrder(PPM thePPM, String orderName){
+        boolean returnedOrder = false;
+        for (int i = 0; i < orders.size(); i++){
+            if (orders.get(i).name.compareTo(orderName) == 0){
+                orders.remove(i);
+                break;
+            }
+        }
+        for (int o = 0; o < thePPM.loadedOrders.size(); o++){
+            if (thePPM.loadedOrders.get(o).name.compareTo(orderName) == 0){
+                discontinuedOrders.add(thePPM.loadedOrders.get(0));
+                thePPM.loadedOrders.remove(o);
+                returnedOrder = true;
+                break;
+            }
+        }
+        return returnedOrder;
+    }
 }
