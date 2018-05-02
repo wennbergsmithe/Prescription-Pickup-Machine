@@ -88,9 +88,8 @@ public class PPMController {
                 User user = ppm.dbConnection.getUserByUsername(username);
                 if (user != null) {
                     Client client = new Client(user.id, user.name, user.username, user.password, user.balance, user.isFrozen, user.passwordSalt, user.allergies);
-                    boolean response = ui.prompt("Are you sure? (Y/N)");
 
-                    if (response) {
+                    if (ui.prompt("Are you sure? (Y/N)")) {
                         ui.out("Deleting " + username + "'s account...");
                         ppm.dbConnection.removeClient(client);
                         ui.out("Successfully deleted " + username + "'s account");
@@ -180,16 +179,15 @@ public class PPMController {
 
                 Order tempOrder = new Order(-1, "", client, 0, inWarnings,inRefillDate);
                 if (tempOrder.checkAllergies()) {
-                    boolean response = ui.prompt("There's an allergy confliction with this medication!\n" +
-                            "Do you still want to give this order to the client? (Y/N)");
-                    if (response) {
+                    if (ui.prompt("There's an allergy confliction with this medication!\n" +
+                            "Do you still want to give this order to the client? (Y/N)")) {
                             Order order = ppm.dbConnection.addOrder(inName, client.username, Double.parseDouble(inPrice), inWarnings,inRefillDate);
-                            client.orders.add(order);
+                            //client.orders.add(order);
                             ui.out("Successfully gave the order to the client");
                     }
                 } else {
                     Order order = ppm.dbConnection.addOrder(inName, client.username, Double.parseDouble(inPrice), inWarnings,inRefillDate);
-                    client.orders.add(order);
+                    //client.orders.add(order);
                     ui.out("Successfully gave the order to the client");
                 }
             } else {
@@ -285,12 +283,23 @@ public class PPMController {
                 String orderName = ui.getString();
                 Order order = ppm.dbConnection.getOrderByNameAndUsername(orderName, ppm.activeUser.username);
                 if (order != null) {
-                    ui.out("How will you pay for the order?\n" +
-                            "Options: credit, debit, balance (account balance), cash");
-                    String paymentMethod = ui.getString();
+                    if (!order.paid) {
+                        ui.out("How will you pay for the order?\n" +
+                                "Options: credit, debit, balance (account balance), cash");
+                        String paymentMethod = ui.getString();
 
-                    order.payOrder(paymentMethod, order.price);
-                    ui.out("The order has been successfully paid off!");
+                        order.payOrder(paymentMethod, order.price);
+                        ui.out("The order has been successfully paid off!");
+
+                        if (ui.prompt("Would you like to set a refill date for this order? (Y/N)")) {
+                            ui.out("Enter the date for your next anticipated refill");
+                            String refillDate = ui.getString();
+                            order.setNextRefill(refillDate);
+                            ui.out("Your next refill date for the order named " + order.name + " has been set!");
+                        }
+                    } else {
+                        ui.out("That order has already been paid off!");
+                    }
                 } else {
                     ui.out("No order named " + orderName + " exists for the user named " + ppm.activeUser.username);
                 }
@@ -401,8 +410,7 @@ public class PPMController {
     private void clearSolvedIssues() {
         if (ppm.activeUser != null) {
             if (!ppm.activeUser.getType().equals("client")) {
-                boolean response = ui.prompt("Are you sure you want to clear all solved issues? (Y/N)");
-                if (response) {
+                if (ui.prompt("Are you sure you want to clear all solved issues? (Y/N)")) {
                         ppm.clearSolvedIssues();
                         ui.out("All solved issues have been cleared");
                 }
@@ -417,8 +425,7 @@ public class PPMController {
     private void clearAllIssues() {
         if (ppm.activeUser != null) {
             if (!ppm.activeUser.getType().equals("client")) {
-                boolean response = ui.prompt("Are you sure absolutely sure you want to clear all issues? This cannot be undone(Y/N)");
-                if (response) {
+                if (ui.prompt("Are you sure absolutely sure you want to clear all issues? This cannot be undone(Y/N)")) {
                         ppm.clearIssues();
                         ui.out("All issues have been cleared");
                 }
@@ -430,11 +437,70 @@ public class PPMController {
         }
     }
 
+    private void addAllergy() {
+        if (ppm.activeUser != null) {
+            if (ppm.activeUser.getType().equals("client")) {
+                User user = ppm.activeUser;
+                Client client = new Client(user.id, user.name, user.username, user.password, user.balance, user.isFrozen, user.passwordSalt, user.allergies);
+
+                ui.out("Enter the name of the allergy you want to add");
+                String allergy = ui.getString();
+                client.addAllergy(allergy);
+
+            } else {
+                ui.out("Only clients should need to change their list of allergies");
+            }
+        } else {
+            ui.out("You must be logged in to change your list of allergies!");
+        }
+    }
+
+    private void removeAllergy() {
+        if (ppm.activeUser != null) {
+            if (ppm.activeUser.getType().equals("client")) {
+                User user = ppm.activeUser;
+                Client client = new Client(user.id, user.name, user.username, user.password, user.balance, user.isFrozen, user.passwordSalt, user.allergies);
+
+                ui.out("Enter the name of the allergy you want to remove");
+                String allergy = ui.getString();
+                if (client.removeAllergy(allergy).equals(allergy)) {
+                    ui.out("You don't have an allergy with a name of " + allergy + "!");
+                }
+            } else {
+                ui.out("Only clients should need to change their list of allergies");
+            }
+        } else {
+            ui.out("You must be logged in to change your list of allergies!");
+        }
+    }
+
+    private void returnOrder() {
+        if (ppm.activeUser != null) {
+            if (ppm.activeUser.getType().equals("client")) {
+                ui.out("Enter the name of the order to be returned");
+                String orderName = ui.getString();
+                Order orderToReturn = ppm.dbConnection.getOrderByNameAndUsername(orderName, ppm.activeUser.username);
+                if (orderToReturn != null) {
+                    if (ui.prompt("Are you sure you want to return that order? (Y/N) (You will be granted a full refund)")) {
+                        ppm.dbConnection.returnOrder(orderToReturn);
+                    }
+                } else {
+                    ui.out("No order found for user " + ppm.activeUser.username + " with order name of " + orderName);
+                }
+            } else {
+                ui.out("Only clients should need to use the PPM to return an order!");
+            }
+        } else {
+            ui.out("You must be logged in to return an order!");
+        }
+    }
+
     public void run() {
         ui = new ConsoleInterface();
         try {
             //Set up basic PPM and Database features
             ppm = new PPM(true);
+            ppm.turnOnRobot();
             ppm.dbConnection.addPharmacist(new Pharmacist(-1, "test pharmacist", "testPharmacist", "password"));
             ppm.login("testPharmacist", "password");
 
@@ -486,6 +552,12 @@ public class PPMController {
                     clearSolvedIssues();
                 } else if (currentInput.equals("clearissues")) {
                     clearAllIssues();
+                } else if (currentInput.equals("addallergy")) {
+                    addAllergy();
+                } else if (currentInput.equals("removeallergy")) {
+                    removeAllergy();
+                } else if (currentInput.equals("returnorder")) {
+                    returnOrder();
                 } else if (currentInput.equals("exit")) {
                     ui.out("Exiting...");
                     done = true;
@@ -494,6 +566,7 @@ public class PPMController {
                 }
 
             }
+            ppm.turnOffRobot();
         } catch (SQLException e) {
             ui.out("Error regarding SQL Database");
             e.printStackTrace();

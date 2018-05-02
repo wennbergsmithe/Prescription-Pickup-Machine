@@ -31,6 +31,9 @@ public class ConsoleInterface implements UserInterface {
         System.out.println("pay - Pay for an order");
         System.out.println("listorders - List your current orders");
         System.out.println("addfunds - Add funds to your account");
+        System.out.println("addallergy - Add an allergy to your current list of allergies");
+        System.out.println("removeallergy - Remove an allergy from your current list of allergies");
+        System.out.println("returnorder - Return an order and get a refund");
         outputBreak();
         System.out.println("Pharmacist/Employee Commands:");
         System.out.println("Keep in mind Employees can only operate on client accounts\n");
