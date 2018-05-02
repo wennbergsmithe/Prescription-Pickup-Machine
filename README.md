@@ -23,7 +23,7 @@ Waffle.io: https://waffle.io/martypv/Drug-Dispenser
 
 ## Quickstart Guide
 
-<b>IF PLANNING ON USING SQL:<b>
+<b>IF PLANNING ON USING SQL:</b>
 
 Create a MySQL databases. Seed both of these with the most recent sql script in `src/main/sql/`.
 <br>Copy `src/main/java/edu.ithaca.group5/ConfigIn.java` to `src/main/java/edu.ithaca.group5/Config.java` and replace constants with proper information.
@@ -32,6 +32,6 @@ Locate `libraries/mysql-connector.jar` and add it as a project library.
 
 Open `PPMController.java` and change the instantiation of `ppm` to `new PPM()`.
 
-<b> IF NOT USING SQL: <b>
+<b> IF NOT USING SQL: </b>
   
 No setup required. Just run `PPMController.main()`
