@@ -404,6 +404,4 @@ public class SQLConnector implements DBConnector {
         }
         return orders;
     }
-
-
 }
