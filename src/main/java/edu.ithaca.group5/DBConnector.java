@@ -33,7 +33,7 @@ public interface DBConnector {
      */
   
   
-    Order addOrder(String inName, String username, double inPrice, String inWarnings, String inRefillDate boolean easyOpen);
+    Order addOrder(String inName, String username, double inPrice, String inWarnings, String inRefillDate, boolean easyOpen);
 
     /**
      * removes a client from the database
