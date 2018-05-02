@@ -359,7 +359,7 @@ public class SQLConnector implements DBConnector {
         }catch(SQLException e){
             e.printStackTrace();
         }
-
+    }
     public void updateBalance(User user) {
         try {
             Statement statement = connection.createStatement();
