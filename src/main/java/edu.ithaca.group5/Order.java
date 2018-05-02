@@ -10,8 +10,9 @@ public class Order {
     boolean paid;
     String warnings;
     boolean easyOpen;
+    String nextRefill;
 
-    Order(long inId, String inName, Client inClient, double inPrice, String inWarnings, boolean easyOpen){
+    Order(long inId, String inName, Client inClient, double inPrice, String inWarnings, String inNextRefill, boolean easyOpen){
         this.id = inId;
         this.name = inName;
         this.client = inClient;
@@ -20,6 +21,7 @@ public class Order {
         this.paid = false;
         this.warnings = inWarnings;
         this.easyOpen = easyOpen;
+        this.nextRefill = inNextRefill;
     }
 
     public long getId(){

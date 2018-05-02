@@ -31,7 +31,7 @@ public interface DBConnector {
      * @param easyOpen boolean if the prescription needs to have easy open caps
      * @return the created order, or null if there was an error
      */
-    Order addOrder(String inName, String username, double inPrice, String inWarnings, boolean easyOpen);
+    Order addOrder(String inName, String username, double inPrice, String inWarnings, String inRefillDate, boolean easyOpen);
 
     /**
      * removes a client from the database

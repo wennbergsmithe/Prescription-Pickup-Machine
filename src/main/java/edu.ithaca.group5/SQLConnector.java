@@ -50,7 +50,7 @@ public class SQLConnector implements DBConnector {
     }
 
     @Override
-    public Order addOrder(String inName, String username, double inPrice, String inWarnings, boolean easyOpen) {
+    public Order addOrder(String inName, String username, double inPrice, String inWarnings, String inRefillDate, boolean easyOpen) {
         return null;
     }
 
@@ -175,6 +175,7 @@ public class SQLConnector implements DBConnector {
                 boolean isVal = rslt.getBoolean("is_validated");
                 double price = rslt.getDouble("price");
                 String warnings = rslt.getString("warnings");
+                String refillDate = rslt.getString("nextRefill");
                 boolean easyOpen = rslt.getBoolean("easy_open");
 
                 ResultSet results = statement.executeQuery("SELECT * FROM user where id=" + clientId);
@@ -184,7 +185,7 @@ public class SQLConnector implements DBConnector {
                             results.getDouble("balance"), results.getBoolean("isFrozen"),
                             results.getString("salt"), results.getString("allergies"));
 
-                    Order currentOrder = new Order(id,name,client,price,warnings,easyOpen);
+                    Order currentOrder = new Order(id,name,client,price,warnings,refillDate,easyOpen);
                     orders.add(currentOrder);
                 }
             }
@@ -225,8 +226,9 @@ public class SQLConnector implements DBConnector {
                     String name = resultSet.getString("name");
                     double price = resultSet.getDouble("price");
                     String warnings = resultSet.getString("warnings");
+                    String refillDate = resultSet.getString("nextRefill");
                     boolean easyOpen = resultSet.getBoolean("easy_open");
-                    Order toReturn = new Order(orderId,name,client,price,warnings, easyOpen);
+                    Order toReturn = new Order(orderId,name,client,price,warnings,refillDate, easyOpen);
                     statement.close();
                     return toReturn;
                 }
@@ -327,6 +329,7 @@ public class SQLConnector implements DBConnector {
                 boolean isFrozen = rslt.getBoolean("isFrozen");
                 String allergies = rslt.getString("allergies");
                 double balance = rslt.getDouble("balance");
+                String refillDate = rslt.getString("nextRefill");
                 boolean easyOpen = rslt.getBoolean("easy_open");
 
 
@@ -336,7 +339,7 @@ public class SQLConnector implements DBConnector {
                             results.getString("username"), results.getString("password"),
                             results.getDouble("balance"), results.getBoolean("isFrozen"),
                             results.getString("salt"), results.getString("allergies"));
-                    Order currentOrder = new Order(id,name,client,price,warnings, easyOpen);
+                    Order currentOrder = new Order(id,name,client,price,warnings,refillDate, easyOpen);
                     orders.add(currentOrder);
                 }
             }
