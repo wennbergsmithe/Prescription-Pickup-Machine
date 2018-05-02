@@ -4,6 +4,7 @@
 
 Waffle.io: https://waffle.io/martypv/Drug-Dispenser
 <br>Slack Channel: https://groupfiveworkspace.slack.com/messages/C9JK5TYNN
+<br>Testing Plan: https://docs.google.com/document/d/1YNFnGZTy0KBOUsWMn6S1iK5du5MSE6HpJ8hAyv4N0-4/edit?usp=sharing
 <br>Narratives and Scenarios: https://docs.google.com/document/d/1Q_dk9RychVNPzYsZbdGBjbsRzND30ZOjMLG0b2xb7Vc/edit
 <br>Sprint Goal #1: Ability to create different types of users and to create/validate orders
 <br>Sprint 1 Diagram: https://drive.google.com/file/d/1etFX3j10tte2eIVCnJCb-t-Zxm8QimKj/view?usp=sharing
