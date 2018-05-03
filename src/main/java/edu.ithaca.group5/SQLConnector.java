@@ -133,8 +133,6 @@ public class SQLConnector implements DBConnector {
             e.printStackTrace();
         }
     }
-
-
     @Override
     public User getUserByUsernameAndPassword(String username, String password) {
         User user = getUserByUsername(username);

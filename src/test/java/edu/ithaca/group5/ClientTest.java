@@ -37,14 +37,15 @@ class ClientTest {
         assertEquals(false, theClient.allergies.contains("allergy3"), "Cannot remove allergy from end");
     }
     @Test
-    void discontinueOrderTest() throws SQLException {
-        try {
-            PPM thePPM = new PPM(true);
-            boolean isOrderRemoved = theClient.discontinueOrder(thePPM, "Order1");
-            assertEquals(true, isOrderRemoved, "Error removing order");
-        }
-        catch (SQLException e){
-            System.out.println("Error with SQL: " + e.getLocalizedMessage());
-        }
+    void discontinueOrderTest() {
+        Order theOrder = new Order(0, "Order1", theClient, 1, "generic order has side effects", "3");
+        theClient.orders.add(theOrder);
+        boolean isOrderRemoved = theClient.discontinueOrder("Order1");
+        assertEquals(true, isOrderRemoved, "Error removing order");
+    }
+    @Test
+    void requestManufacturerTest(){
+        String requestedManufacturer = theClient.requestManufacturer("DrugCo");
+        assertEquals("DrugCo", requestedManufacturer);
     }
 }
