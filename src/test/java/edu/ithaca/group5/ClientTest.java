@@ -34,5 +34,4 @@ class ClientTest {
         theClient.removeAllergy("allergy3");
         assertEquals(false, theClient.allergies.contains("allergy3"), "Cannot remove allergy from end");
     }
-
 }

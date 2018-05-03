@@ -63,13 +63,15 @@ public class EmployeeTest {
 
             //this method only prints orders to console and there is currently no way to load orders into the ppm to test
 
-
         }catch(java.sql.SQLException e){
             e.printStackTrace();
         }
-
-
-
+    }
+    @Test
+    void sendMDNoticeTest(){
+        Employee theEmployee = new Employee(1, "empTest", "PasswordIsPassword", "Password", false, 0, "none");
+        Client theClient = new Client(0, "client", "client123", "client123", false, 10, "molecules");
+        theEmployee.sendMDNotice(theClient, "molecules", 999999999);
     }
 }
 
