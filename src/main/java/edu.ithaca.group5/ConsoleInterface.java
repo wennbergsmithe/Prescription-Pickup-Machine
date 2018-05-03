@@ -26,6 +26,7 @@ public class ConsoleInterface implements UserInterface {
         System.out.println("exit - Ends the program");
         System.out.println("listloadedorders - Lists the orders that are currently in the PPM");
         System.out.println("report - Report an issue with the PPM");
+        System.out.println("feelingsassy - ???");
         outputBreak();
         System.out.println("Client Commands:\n");
         System.out.println("pay - Pay for an order");

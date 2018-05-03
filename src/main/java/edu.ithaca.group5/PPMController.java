@@ -6,6 +6,7 @@ import java.util.List;
 public class PPMController {
     PPM ppm;
     UserInterface ui;
+    boolean sassmode = false;
 
     private void welcomeMessage() {
         ui.out("Welcome to the Prescription Pickup Machine!\n" +
@@ -15,15 +16,35 @@ public class PPMController {
 
     private void statusMessage() {
         if (ppm.activeUser != null) {
-            ui.out("\nCurrently logged in as " + ppm.activeUser.name);
+            if (sassmode) {
+                ui.out("Your name's still " + ppm.activeUser.name + ", right?");
+            }
+            else {
+                ui.out("\nCurrently logged in as " + ppm.activeUser.name);
+            }
             if (ppm.activeUser.getType().equals("client")) {
-                ui.out("Your account balance: $" + ppm.activeUser.balance);
+                if (sassmode) {
+                    ui.out("Your net worth: $" + ppm.activeUser.balance);
+                }
+                else {
+                    ui.out("Your account balance: $" + ppm.activeUser.balance);
+                }
             } else {
-                ui.out("You have administrative privileges");
+                if (sassmode) {
+                    ui.out("You're effectively a god to me, so I'll let you do what you want (most of the time)");
+                }
+                else {
+                    ui.out("You have administrative privileges");
+                }
             }
             ui.out("");
         } else {
-            ui.out("\nNobody is currently logged in\n");
+            if (sassmode) {
+                ui.out("Log into an account!");
+            }
+            else {
+                ui.out("\nNobody is currently logged in\n");
+            }
         }
 
         //Print message for a new user logging in
@@ -38,7 +59,12 @@ public class PPMController {
                     }
                 }
                 if (!issues.equals("")) {
-                    ui.out("There were new issues reported within the PPM that need your attention!");
+                    if (sassmode) {
+                        ui.out("You're not doing your job! Something's wrong with the machine!");
+                    }
+                    else {
+                        ui.out("There were new issues reported within the PPM that need your attention!");
+                    }
                     ui.out(issues);
                 }
             }
@@ -48,32 +74,67 @@ public class PPMController {
     }
 
     private void createUser() {
-        ui.out("To create an account you must provide a name, username, password, and type");
-        ui.out("Enter a name:");
-        String name = ui.getString();
-        ui.out("Enter a username:");
-        String username = ui.getString();
-        ui.out("Enter a password:");
-        String password = ui.getString();
-        ui.out("Enter an account type (client, employee, or pharmacist):");
-        String type = ui.getString();
-        type.toLowerCase();
+        String name = "", username = "", password = "", type = "";
+        if (sassmode) {
+            ui.out("The power of creation is in your hands.");
+            ui.out("What shall you call this person?");
+            name = ui.getString();
+            ui.out("That name's nice, but what should should this person's system name be?");
+            username = ui.getString();
+            ui.out("What's their secret phrase to get into their account that no one should know but " +
+                    "you do because you're making their account right now?");
+            password = ui.getString();
+            ui.out("Is this person a client, or one of your weird 'certified' scientist friends? (client, employee, or pharmacist)");
+            type = ui.getString();
+            type.toLowerCase();
+        }
+        else {
+            ui.out("To create an account you must provide a name, username, password, and type");
+            ui.out("Enter a name:");
+            name = ui.getString();
+            ui.out("Enter a username:");
+            username = ui.getString();
+            ui.out("Enter a password:");
+            password = ui.getString();
+            ui.out("Enter an account type (client, employee, or pharmacist):");
+            type = ui.getString();
+            type.toLowerCase();
+        }
 
         //Make sure the type is an elligible type
         if (type.equals("client") || type.equals("employee") || type.equals("pharmacist")) {
             try {
                 User createdUser = ppm.createUser(name, username, password, type);
-                if (createdUser == null) {
-                    ui.out("Error: you don't have permission to create that type of user!");
-                } else {
-                    ui.out("Successfully created a new user with a name of '" + createdUser.name + "'!");
+                if (sassmode) {
+                    if (createdUser == null) {
+                        ui.out("Wait, you're not an admin!");
+                    } else {
+                        ui.out("Great, now I have another name to remember: " + createdUser.name + ".");
+                    }
+                }
+                else {
+                    if (createdUser == null) {
+                        ui.out("Error: you don't have permission to create that type of user!");
+                    } else {
+                        ui.out("Successfully created a new user with a name of '" + createdUser.name + "'!");
+                    }
                 }
 
             } catch (UsernameTakenException e) {
-                ui.out("Error: the username '" + e.desiredName + "' is already taken");
+                if (sassmode) {
+                    ui.out("Wow! What a great username! Too bad it's taken...");
+                }
+                else {
+                    ui.out("Error: the username '" + e.desiredName + "' is already taken");
+                }
             }
         } else {
-            ui.out("Error: not an eligible account type");
+            if (sassmode) {
+                ui.out("I don't recognize that account type. Even though I listed the possible options, you still messed up?");
+            }
+            else {
+                ui.out("Error: not an eligible account type");
+            }
         }
         //Add another line for neatness
         ui.out("");
@@ -82,119 +143,258 @@ public class PPMController {
     private void removeUser() {
         if (ppm.activeUser != null) {
             if (ppm.activeUser.getType().equals("pharmacist")) {
-                ui.out("Enter the username of the user you want to delete:");
+                if (sassmode) {
+                    ui.out("Who's being killed?");
+                }
+                else {
+                    ui.out("Enter the username of the user you want to delete:");
+                }
                 String username = ui.getString();
 
                 User user = ppm.dbConnection.getUserByUsername(username);
                 if (user != null) {
                     Client client = new Client(user.id, user.name, user.username, user.password, user.balance, user.isFrozen, user.passwordSalt, user.allergies);
 
-                    if (ui.prompt("Are you sure? (Y/N)")) {
-                        ui.out("Deleting " + username + "'s account...");
+                    if (sassmode) {
+                        ui.out(username + " SHALL BE EXTERMINATED");
                         ppm.dbConnection.removeClient(client);
-                        ui.out("Successfully deleted " + username + "'s account");
+                        ui.out("Oh, I forgot to ask you if that info was correct?? Oh well.");
+                    }
+                    else {
+                        if (ui.prompt("Are you sure? (Y/N)")) {
+                            ui.out("Deleting " + username + "'s account...");
+                            ppm.dbConnection.removeClient(client);
+                            ui.out("Successfully deleted " + username + "'s account");
+                        }
                     }
                 } else {
-                    ui.out("No user exists with a username of " + username);
+                    if (sassmode) {
+                        ui.out("I'd love to completely destroy that person, but I don't recognize that username.");
+                    }
+                    else {
+                        ui.out("No user exists with a username of " + username);
+                    }
                 }
             } else {
-                ui.out("You do not have permission to delete users!");
+                if (sassmode) {
+                    ui.out("As much as I'd like to go around wiping the entire database, I'm not allowed to do it unless " +
+                            "a pharmacist or employee is giving the orders. You're just a client.");
+                }
+                else {
+                    ui.out("You do not have permission to delete users!");
+                }
             }
         } else {
-            ui.out("Please log in before attempting to delete a user");
+            if (sassmode) {
+                ui.out("I know anonymity is huge these days, but I'm not gonna let you delete someone's account anonymously.");
+            }
+            else {
+                ui.out("Please log in before attempting to delete a user");
+            }
         }
     }
 
     private void login() {
         if (!ppm.isLoggedIn()) {
-            ui.out("Enter a username:");
+            if (sassmode) {
+                ui.out("What's your name? Username, specifically");
+            }
+            else {
+                ui.out("Enter a username:");
+            }
             String username = ui.getString();
-            ui.out("Enter a password:");
+            if (sassmode) {
+                ui.out("Tell me your secret password. I won't tell :^)");
+            }
+            else {
+                ui.out("Enter a password:");
+            }
             String password = ui.getString();
 
             User newUser = ppm.login(username, password);
             if (newUser != null) {
-                ui.out("Successfully logged into " + newUser.name + "'s account!");
+                if (sassmode) {
+                    ui.out("That password's incorrect, please try again\n Just kidding, you're in! And I have " +
+                            "your password!");
+                }
+                else {
+                    ui.out("Successfully logged into " + newUser.name + "'s account!");
+                }
                 ppm.activeUser = newUser;
                 ppm.justLoggedIn = true;
             } else {
                 User possibleUser = ppm.dbConnection.getUserByUsername(username);
                 if (possibleUser != null && possibleUser.isFrozen) {
-                    ui.out("This account has been locked due to excessive login attempts." +
-                            " Contact your local employee for assistance.");
+                    if (sassmode) {
+                        ui.out("You're a really bad hacker... the account you tried to break into is now locked." +
+                                " Only the power of the legendary pharmacist can get you out of this one.");
+                    }
+                    else {
+                        ui.out("This account has been locked due to excessive login attempts." +
+                                " Contact your local employee for assistance.");
+                    }
                 } else {
-                    ui.out("Error: could not complete the login");
+                    if (sassmode) {
+                        ui.out("You messed up. Don't ask me where.");
+                    }
+                    else {
+                        ui.out("Error: could not complete the login");
+                    }
                 }
             }
             //Add another line for neatness
             ui.out("");
         } else {
-            ui.out("Log out of the current account before logging in!");
+            if (sassmode) {
+                ui.out("You can't log into two accounts at once... How would that even work?");
+            }
+            else {
+                ui.out("Log out of the current account before logging in!");
+            }
         }
     }
 
     private void logout() {
         User pastUser = ppm.logout();
         if (pastUser != null) {
-            ui.out(pastUser.name + " has been logged out.");
+            if (sassmode) {
+                ui.out("Cya, " + pastUser.name + "! I won't miss you!");
+            }
+            else {
+                ui.out(pastUser.name + " has been logged out.");
+            }
         } else {
-            ui.out("Cannot log someone out if nobody is logged in!");
+            if (sassmode) {
+                ui.out("Sure, I'll log you out. You made it easy for me because you never logged in.");
+            }
+            else {
+                ui.out("Cannot log someone out if nobody is logged in!");
+            }
         }
     }
 
     private void unblockUser() {
         if (ppm.activeUser != null && !ppm.activeUser.getType().equals("client")) {
-            ui.out("Enter the username of the account you want to unblock");
+            if (sassmode) {
+                ui.out("What's the username of the person you're graciously forgiving?");
+            }
+            else {
+                ui.out("Enter the username of the account you want to unblock");
+            }
             String username = ui.getString();
             User blockedUser = ppm.dbConnection.getUserByUsername(username);
             if (blockedUser.isFrozen) {
                 ppm.dbConnection.unfreezeUser(blockedUser);
-                ui.out(username + "'s account has been unblocked.");
+                if (sassmode) {
+                    ui.out(username + " has been forgiven.");
+                }
+                else {
+                    ui.out(username + "'s account has been unblocked.");
+                }
             } else {
-                ui.out("That user's account is not blocked!");
+                if (sassmode) {
+                    ui.out("That user did nothing wrong: their account's fine!");
+                }
+                else {
+                    ui.out("That user's account is not blocked!");
+                }
             }
         } else {
-            ui.out("You do not have permission to unblock accounts!");
+            if (sassmode) {
+                ui.out("You're not allowed to do that.");
+            }
+            else {
+                ui.out("You do not have permission to unblock accounts!");
+            }
         }
     }
 
     private void addOrder() {
-        ui.out("Enter the username of the client who will receive the order:");
+        if (sassmode) {
+            ui.out("Who are these drugs for?");
+        }
+        else {
+            ui.out("Enter the username of the client who will receive the order:");
+        }
         String username = ui.getString();
         User user = ppm.dbConnection.getUserByUsername(username);
         if (user != null) {
             if (user.getType().equals("client")) {
                 Client client = new Client(user.id, user.name, user.username, user.password, user.balance, user.isFrozen, user.passwordSalt, user.allergies);
-                ui.out("What is the name of the order?");
-                String inName = ui.getString();
-                ui.out("What is the price of this order?");
-                String inPrice = ui.getString();
-                ui.out("Enter any warnings for this order, or 'none' if there are none:");
-                String inWarnings = ui.getString();
-                if (inWarnings.toLowerCase().equals("none")) {
-                    inWarnings = "";
+                String inName = "", inPrice = "", inWarnings = "", inRefillDate = "";
+                if (sassmode) {
+                    ui.out("What's this shipment's code name?");
+                    inName = ui.getString();
+                    ui.out("How much money are you robbing them for?");
+                    inPrice = ui.getString();
+                    ui.out("Is there a way taking this drug can kill the person? Enter any warnings, and type " +
+                            "'none' if there aren't any.");
+                    inWarnings = ui.getString();
+
+                    if (inWarnings.toLowerCase().equals("none")) {
+                        inWarnings = "";
+                    }
+
+                    ui.out("When's the shipment being refilled?");
+                    inRefillDate = ui.getString();
                 }
-                ui.out("Enter the date for your next refill:");
-                String inRefillDate = ui.getString();
+                else {
+                    ui.out("What is the name of the order?");
+                    inName = ui.getString();
+                    ui.out("What is the price of this order?");
+                    inPrice = ui.getString();
+                    ui.out("Enter any warnings for this order, or 'none' if there are none:");
+                    inWarnings = ui.getString();
+
+                    if (inWarnings.toLowerCase().equals("none")) {
+                        inWarnings = "";
+                    }
+
+                    ui.out("Enter the date for your next refill:");
+                    inRefillDate = ui.getString();
+                }
 
                 Order tempOrder = new Order(-1, "", client, 0, inWarnings,inRefillDate);
                 if (tempOrder.checkAllergies()) {
-                    if (ui.prompt("There's an allergy confliction with this medication!\n" +
-                            "Do you still want to give this order to the client? (Y/N)")) {
-                            Order order = ppm.dbConnection.addOrder(inName, client.username, Double.parseDouble(inPrice), inWarnings,inRefillDate);
+                    if (sassmode) {
+                        if (ui.prompt("This drug will kill this person! Is that your true intention? (Y/N)")) {
+                            Order order = ppm.dbConnection.addOrder(inName, client.username, Double.parseDouble(inPrice), inWarnings, inRefillDate);
+                            ui.out("Alright, just making sure. That person should be dead in a few weeks.");
+                        }
+                    }
+                    else {
+                        if (ui.prompt("There's an allergy confliction with this medication!\n" +
+                                "Do you still want to give this order to the client? (Y/N)")) {
+                            Order order = ppm.dbConnection.addOrder(inName, client.username, Double.parseDouble(inPrice), inWarnings, inRefillDate);
                             //client.orders.add(order);
                             ui.out("Successfully gave the order to the client");
+                        }
                     }
                 } else {
                     Order order = ppm.dbConnection.addOrder(inName, client.username, Double.parseDouble(inPrice), inWarnings,inRefillDate);
                     //client.orders.add(order);
-                    ui.out("Successfully gave the order to the client");
+                    if (sassmode) {
+                        ui.out("The 'legal' order has been placed!");
+                    }
+                    else {
+                        ui.out("Successfully gave the order to the client");
+                    }
                 }
             } else {
-                ui.out("That user is not a client!");
+                if (sassmode) {
+                    ui.out("That's not a client: employees and pharmacists shouldn't be taking random drugs.");
+                }
+                else {
+                    ui.out("That user is not a client!");
+                }
             }
         } else {
-            ui.out("No user exists with username " + username);
+            if (sassmode) {
+                ui.out("That user doesn't exist.");
+            }
+            else {
+                ui.out("No user exists with username " + username);
+            }
         }
         ui.out("");
     }
@@ -202,57 +402,128 @@ public class PPMController {
     private void validateOrder() {
         if (ppm.activeUser != null) {
             if (ppm.activeUser.getType().equals("pharmacist")) {
-                ui.out("What is the username of the client that the order is for?");
+                if (sassmode) {
+                    ui.out("Who's the order for?");
+                }
+                else {
+                    ui.out("What is the username of the client that the order is for?");
+                }
                 String username = ui.getString();
-                ui.out("What is the name of the order?");
+                if (sassmode) {
+                    ui.out("What's the order's name?");
+                }
+                else {
+                    ui.out("What is the name of the order?");
+                }
                 String ordername = ui.getString();
                 Order order = ppm.dbConnection.getOrderByNameAndUsername(ordername, username);
                 if (order != null) {
                     order.setValidated(true);
-                    ui.out("The order for user " + username + " with an order name of " + ordername +
-                            " has been successfully validated");
+                    if (sassmode) {
+                        ui.out("The order's been validated: if those drugs are illegal, that person can now " +
+                                "blame you!");
+                    }
+                    else {
+                        ui.out("The order for user " + username + " with an order name of " + ordername +
+                                " has been successfully validated");
+                    }
                 } else {
-                    ui.out("No order found for " + username + " with a name of " + ordername);
+                    if (sassmode) {
+                        ui.out("That order doesn't exist for that client.");
+                    }
+                    else {
+                        ui.out("No order found for " + username + " with a name of " + ordername);
+                    }
                 }
             } else {
-                ui.out("You must be a pharmacist to validate an order!");
+                if (sassmode) {
+                    ui.out("You're not a 'certified' pharmacist, so you can't validate orders.");
+                }
+                else {
+                    ui.out("You must be a pharmacist to validate an order!");
+                }
             }
         } else {
-            ui.out("You must be logged in to validate an order!");
+            if (sassmode) {
+                ui.out("What, is 'null' your real name? Log in first!");
+            }
+            else {
+                ui.out("You must be logged in to validate an order!");
+            }
         }
     }
 
     private void loadOrder() {
         if (ppm.activeUser != null) {
             if (!ppm.activeUser.getType().equals("client")) {
-                ui.out("What is the username of the client that the order is for?");
+                if (sassmode) {
+                    ui.out("Who's the order for?");
+                }
+                else {
+                    ui.out("What is the username of the client that the order is for?");
+                }
                 String username = ui.getString();
-                ui.out("What is the name of the order?");
+                if (sassmode) {
+                    ui.out("What's the order's name?");
+                }
+                else {
+                    ui.out("What is the name of the order?");
+                }
                 String ordername = ui.getString();
                 Order order = ppm.dbConnection.getOrderByNameAndUsername(ordername, username);
                 if (order != null) {
                     ppm.loadOrder(order);
-                    ui.out("Loaded the order to the PPM!");
+                    if (sassmode) {
+                        ui.out("That order's ready for legal pickup! Keep the drugs coming!");
+                    }
+                    else {
+                        ui.out("Loaded the order to the PPM!");
+                    }
                 } else {
-                    ui.out("No order found for user " + username + " with an order name of " + ordername);
+                    if (sassmode) {
+                        ui.out("That order doesn't exist for that user.");
+                    }
+                    else {
+                        ui.out("No order found for user " + username + " with an order name of " + ordername);
+                    }
                 }
             } else {
-                ui.out("You must be an employee to load an order to the PPM!");
+                if (sassmode) {
+                    ui.out("You're just a client who's looking for cheap drugs. You can't do that.");
+                }
+                else {
+                    ui.out("You must be an employee to load an order to the PPM!");
+                }
             }
         } else {
-            ui.out("You must be logged in to load an order to the PPM!");
+            if (sassmode) {
+                ui.out("What, is 'null' your real name? Log in first!");
+            }
+            else {
+                ui.out("You must be logged in to load an order to the PPM!");
+            }
         }
     }
 
     private void listLoadedOrders() {
         List<Order> orders = ppm.getLoadedOrders();
         if (orders.size() != 0) {
-            ui.out("Orders that are currently in the PPM:");
+            if (sassmode) {
+                ui.out("Here's the current 'legal' orders:");
+            }
+            else {
+                ui.out("Orders that are currently in the PPM:");
+            }
             for (int i = 0; i < orders.size(); i++) {
                 ui.out(orders.get(i).orderDetails());
             }
         } else {
-            ui.out("No orders are currently loaded to the PPM");
+            if (sassmode) {
+                ui.out("There aren't any orders, so you're probably not making much money right now.");
+            }
+            else {
+                ui.out("No orders are currently loaded to the PPM");
+            }
         }
     }
 
@@ -261,90 +532,204 @@ public class PPMController {
             if (ppm.activeUser.getType().equals("client")) {
                 List<Order> orders = ppm.dbConnection.getOrdersByUsername(ppm.activeUser.username);
                 if (orders.size() != 0) {
-                    ui.out("Your current orders:");
+                    if (sassmode) {
+                        ui.out("Your 'legal' orders:");
+                    }
+                    else {
+                        ui.out("Your current orders:");
+                    }
                     for (int i = 0; i < orders.size(); i++) {
                         ui.out(orders.get(i).orderDetails());
                     }
                 } else {
-                    ui.out("You don't have any available orders!");
+                    if (sassmode) {
+                        ui.out("You don't have any ordered drugs. Good job! Keep saying no to drugs!");
+                    }
+                    else {
+                        ui.out("You don't have any available orders!");
+                    }
                 }
             } else {
-                ui.out("An admin does not have orders!");
+                if (sassmode) {
+                    ui.out("You're a busy and respectable employee. You don't have time for drugs!");
+                }
+                else {
+                    ui.out("An admin does not have orders!");
+                }
             }
         } else {
-            ui.out("You don't have any orders because you're not logged in!");
+            if (sassmode) {
+                ui.out("What, is 'null' your real name? Log in first!");
+            }
+            else {
+                ui.out("You don't have any orders because you're not logged in!");
+            }
         }
     }
 
     private void payOrder() {
         if (ppm.activeUser != null) {
             if (ppm.activeUser.getType().equals("client")) {
-                ui.out("Enter the name of the order you want to pay for:");
+                if (sassmode) {
+                    ui.out("What's the order you're throwing money into?");
+                }
+                else {
+                    ui.out("Enter the name of the order you want to pay for:");
+                }
                 String orderName = ui.getString();
                 Order order = ppm.dbConnection.getOrderByNameAndUsername(orderName, ppm.activeUser.username);
                 if (order != null) {
                     if (!order.paid) {
-                        ui.out("How will you pay for the order?\n" +
-                                "Options: credit, debit, balance (account balance), cash");
+                        if (sassmode) {
+                            ui.out("How are you paying for this? credit, debit, balance, or cash? Don't say " +
+                                    "credit: we all know your account's broke");
+                        }
+                        else {
+                            ui.out("How will you pay for the order?\n" +
+                                    "Options: credit, debit, balance (account balance), cash");
+                        }
                         String paymentMethod = ui.getString();
 
                         order.payOrder(paymentMethod, order.price);
-                        ui.out("The order has been successfully paid off!");
-
-                        if (ui.prompt("Would you like to set a refill date for this order? (Y/N)")) {
-                            ui.out("Enter the date for your next anticipated refill");
-                            String refillDate = ui.getString();
-                            order.setNextRefill(refillDate);
-                            ui.out("Your next refill date for the order named " + order.name + " has been set!");
+                        if (sassmode) {
+                            ui.out("That order's been paid for! Have fun being so drugged up you can't think!");
+                            if (ui.prompt("Want this order again sometime in the future? (Y/N)")) {
+                                ui.out("When do you think you'll have burnt through your current supply?");
+                                String refillDate = ui.getString();
+                                order.setNextRefill(refillDate);
+                                ui.out("Your next pickup date is set!");
+                            }
+                        }
+                        else {
+                            ui.out("The order has been successfully paid off!");
+                            if (ui.prompt("Would you like to set a refill date for this order? (Y/N)")) {
+                                ui.out("Enter the date for your next anticipated refill");
+                                String refillDate = ui.getString();
+                                order.setNextRefill(refillDate);
+                                ui.out("Your next refill date for the order named " + order.name + " has been set!");
+                            }
                         }
                     } else {
-                        ui.out("That order has already been paid off!");
+                        if (sassmode) {
+                            ui.out("That order's been paid already! You must be so drugged up you can't even tell!");
+                        }
+                        else {
+                            ui.out("That order has already been paid off!");
+                        }
                     }
                 } else {
-                    ui.out("No order named " + orderName + " exists for the user named " + ppm.activeUser.username);
+                    if (sassmode) {
+                        ui.out("That order doesn't exist.");
+                    }
+                    else {
+                        ui.out("No order named " + orderName + " exists for the user named " + ppm.activeUser.username);
+                    }
                 }
             } else {
-                ui.out("Only clients can pay for orders!");
+                if (sassmode) {
+                    ui.out("You're not a client. You shouldn't need drugs.");
+                }
+                else {
+                    ui.out("Only clients can pay for orders!");
+                }
             }
         } else {
-            ui.out("Log in before trying to pay for an order!");
+            if (sassmode) {
+                ui.out("Do you really want to throw away your money? Log in before trying to shove money into this machine!");
+            }
+            else {
+                ui.out("Log in before trying to pay for an order!");
+            }
         }
     }
 
     private void addFunds() {
         if (ppm.activeUser != null) {
             if (ppm.activeUser.getType().equals("client")) {
-                ui.out("How much are you adding to your account?");
+                if (sassmode) {
+                    ui.out("How much are you giving to our responsible company?");
+                }
+                else {
+                    ui.out("How much are you adding to your account?");
+                }
                 String amountIn = ui.getString();
-                ui.out("How will you add funds?\n" +
-                        "Options: credit, debit, balance (account balance), cash");
+                if (sassmode) {
+                    ui.out("How will you pay for this? credit, debit, balance, or cash?");
+                }
+                else {
+                    ui.out("How will you add funds?\n" +
+                            "Options: credit, debit, balance (account balance), cash");
+                }
                 String paymentMethod = ui.getString();
 
                 double amount = Double.parseDouble(amountIn);
                 if (amount >= 0) {
                     ppm.activeUser.balance += amount;
-                    ui.out("Successfully added funds of $" + amountIn + " to your account");
+                    if (sassmode) {
+                        ui.out("You've successfully wasted your money in this worthless company. Oops, did " +
+                                "I just say that out loud?");
+                    }
+                    else {
+                        ui.out("Successfully added funds of $" + amountIn + " to your account");
+                    }
                 } else {
-                    ui.out("You cannot subtract funds from your account!");
+                    if (sassmode) {
+                        ui.out("I know you're broke, but you can't get money that easily.");
+                    }
+                    else {
+                        ui.out("You cannot subtract funds from your account!");
+                    }
                 }
             } else {
-                ui.out("There's no reason for an admin to add funds to their account!");
+                if (sassmode) {
+                    ui.out("Admins don't need drugs, and therefore they don't need to put money into this machine.");
+                }
+                else {
+                    ui.out("There's no reason for an admin to add funds to their account!");
+                }
             }
         } else {
-            ui.out("Log in before trying to add to your account's balance!");
+            if (sassmode) {
+                ui.out("Do you really want to throw away your money? Log in before trying to shove money into this machine!");
+            }
+            else {
+                ui.out("Log in before trying to add to your account's balance!");
+            }
         }
     }
 
     private void reportIssue() {
-        ui.out("Please give a brief description of the issue");
+        if (sassmode) {
+            ui.out("Oh, wow. What's wrong this time?");
+        }
+        else {
+            ui.out("Please give a brief description of the issue");
+        }
         String desc = ui.getString();
-        ui.out("Enter the name of the issue");
+        if (sassmode) {
+            ui.out("Great description, but summarize it in a few short words so I can access it without going " +
+                    "through your stuttering and panic.");
+        }
+        else {
+            ui.out("Enter the name of the issue");
+        }
         String name = ui.getString();
 
         if (ppm.addIssue(name, desc) != null) {
-            ui.out("Issue successfully added to the PPM. The Employees will be notified.");
+            if (sassmode) {
+                ui.out("Ok, the Employee will be notified. Let's just hope they actually check the list of issues" +
+                        " this time.");
+            }
+            else {
+                ui.out("Issue successfully added to the PPM. The Employees will be notified.");
+            }
         } else {
-            ui.out("Please enter a valid description for the issue");
+            if (sassmode) {
+                ui.out("That description's completely unintelligible. Come back once you've calmed down a little.");
+            }
+            else {
+                ui.out("Please enter a valid description for the issue");
+            }
         }
     }
 
@@ -356,84 +741,193 @@ public class PPMController {
                     issues += issue.toString() + '\n';
                 }
                 if (!issues.equals("")) {
-                    ui.out("Current and Past Issues:");
+                    if (sassmode) {
+                        ui.out("All issues:");
+                    }
+                    else {
+                        ui.out("Current and Past Issues:");
+                    }
                     System.out.print(issues);
                 } else {
-                    ui.out("There are no current issues with the PPM");
+                    if (sassmode) {
+                        ui.out("There's no issues. I'd say 'good job', but that would cause you to feel confident, " +
+                                "which might negatively affect your good work ethic.");
+                    }
+                    else {
+                        ui.out("There are no current issues with the PPM");
+                    }
                 }
             } else {
-                ui.out("You don't have permission to view the PPM's issues!");
+                if (sassmode) {
+                    ui.out("You can't view the PPM's issues. If you could, you'd probably stop using it, and we " +
+                            "need your money.");
+                }
+                else {
+                    ui.out("You don't have permission to view the PPM's issues!");
+                }
             }
         } else {
-            ui.out("Log into an employee account to access the PPM's issues");
+            if (sassmode) {
+                ui.out("What, is 'null' your real name? Log in first!");
+            }
+            else {
+                ui.out("Log into an employee account to access the PPM's issues");
+            }
         }
     }
 
     private void solveIssue() {
         if (ppm.activeUser != null) {
             if (!ppm.activeUser.getType().equals("client")) {
-                ui.out("Enter the name of the issue that's been solved");
+                if (sassmode) {
+                    ui.out("What issue are you CLAIMING to have fixed?");
+                }
+                else {
+                    ui.out("Enter the name of the issue that's been solved");
+                }
                 String name = ui.getString();
 
                 if (ppm.solveIssue(name.toLowerCase())) {
-                    ui.out("The issue named " + name + " is now solved");
+                    if (sassmode) {
+                        ui.out("That issue should now appear to be solved from other employee's accounts.");
+                    }
+                    else {
+                        ui.out("The issue named " + name + " is now solved");
+                    }
                 } else {
-                    ui.out("Invalid issue name!");
+                    if (sassmode) {
+                        ui.out("That issue does not exist.");
+                    }
+                    else {
+                        ui.out("Invalid issue name!");
+                    }
                 }
             } else {
-                ui.out("Only employees can label issues as solved");
+                if (sassmode) {
+                    ui.out("You're not an employee, so you're not skilled enough to solve the machine's many issues.");
+                }
+                else {
+                    ui.out("Only employees can label issues as solved");
+                }
             }
         } else {
-            ui.out("You must log into an employee's account to label an issue as solved!");
+            if (sassmode) {
+                ui.out("What, is 'null' your real name? Log in first!");
+            }
+            else {
+                ui.out("You must log into an employee's account to label an issue as solved!");
+            }
         }
     }
 
     private void removeIssue() {
         if (ppm.activeUser != null) {
             if (!ppm.activeUser.getType().equals("client")) {
-                ui.out("Enter the name of the issue you want to remove");
+                if (sassmode) {
+                    ui.out("What issue are you deleting?");
+                }
+                else {
+                    ui.out("Enter the name of the issue you want to remove");
+                }
                 String name = ui.getString();
 
                 if (ppm.removeIssue(name) != null) {
-                    ui.out("The issue named " + name + " has been successfully deleted");
+                    if (sassmode) {
+                        ui.out("That issue is now gone forever.");
+                    }
+                    else {
+                        ui.out("The issue named " + name + " has been successfully deleted");
+                    }
                 } else {
-                    ui.out("Invalid issue name!");
+                    if (sassmode) {
+                        ui.out("That issue name's invalid.");
+                    }
+                    else {
+                        ui.out("Invalid issue name!");
+                    }
                 }
             } else {
-                ui.out("You do not have permission to remove reported PPM issues");
+                if (sassmode) {
+                    ui.out("You don't have permission to remove issues from the PPM. Since there's so many," +
+                            " I honestly kind of wish you did.");
+                }
+                else {
+                    ui.out("You do not have permission to remove reported PPM issues");
+                }
             }
         } else {
-            ui.out("You must be logged into an employee account to remove an issue!");
+            if (sassmode) {
+                ui.out("What, is 'null' your real name? Log in first!");
+            }
+            else {
+                ui.out("You must be logged into an employee account to remove an issue!");
+            }
         }
     }
 
     private void clearSolvedIssues() {
         if (ppm.activeUser != null) {
             if (!ppm.activeUser.getType().equals("client")) {
-                if (ui.prompt("Are you sure you want to clear all solved issues? (Y/N)")) {
+                if (sassmode) {
+                    if (ui.prompt("Do you want to clear all solved issues? Seems safe. (Y/N)")) {
+                        ppm.clearSolvedIssues();
+                        ui.out("Ok, solved issues are now gone.");
+                    }
+                }
+                else {
+                    if (ui.prompt("Are you sure you want to clear all solved issues? (Y/N)")) {
                         ppm.clearSolvedIssues();
                         ui.out("All solved issues have been cleared");
+                    }
                 }
             } else {
-                ui.out("You do not have permission to remove reported PPM issues");
+                if (sassmode) {
+                    ui.out("You don't have permission to clear issues. Your job is to REPORT them.");
+                }
+                else {
+                    ui.out("You do not have permission to remove reported PPM issues");
+                }
             }
         } else {
-            ui.out("You must be logged into an employee account to remove an issue!");
+            if (sassmode) {
+                ui.out("What, is 'null' your real name? Log in first!");
+            }
+            else {
+                ui.out("You must be logged into an employee account to remove an issue!");
+            }
         }
     }
 
     private void clearAllIssues() {
         if (ppm.activeUser != null) {
             if (!ppm.activeUser.getType().equals("client")) {
-                if (ui.prompt("Are you sure absolutely sure you want to clear all issues? This cannot be undone(Y/N)")) {
+                if (sassmode) {
+                    if (ui.prompt("Clearing all issues, huh? That's a confident move. (Y/N)")) {
+                        ppm.clearIssues();
+                        ui.out("All issues are now gone. The ignorant now think the PPM is completely issue-free!");
+                    }
+                }
+                else {
+                    if (ui.prompt("Are you sure absolutely sure you want to clear all issues? This cannot be undone(Y/N)")) {
                         ppm.clearIssues();
                         ui.out("All issues have been cleared");
+                    }
                 }
             } else {
-                ui.out("You do not have permission to remove reported PPM issues");
+                if (sassmode) {
+                    ui.out("Trust me, this command's not for you.");
+                }
+                else {
+                    ui.out("You do not have permission to remove reported PPM issues");
+                }
             }
         } else {
-            ui.out("You must be logged into an employee account to remove an issue!");
+            if (sassmode) {
+                ui.out("What, is 'null' your real name? Log in first!");
+            }
+            else {
+                ui.out("You must be logged into an employee account to remove an issue!");
+            }
         }
     }
 
@@ -443,15 +937,31 @@ public class PPMController {
                 User user = ppm.activeUser;
                 Client client = new Client(user.id, user.name, user.username, user.password, user.balance, user.isFrozen, user.passwordSalt, user.allergies);
 
-                ui.out("Enter the name of the allergy you want to add");
+                if (sassmode) {
+                    ui.out("What'd you develop an allergy to this time?");
+                }
+                else {
+                    ui.out("Enter the name of the allergy you want to add");
+                }
                 String allergy = ui.getString();
                 client.addAllergy(allergy);
 
             } else {
-                ui.out("Only clients should need to change their list of allergies");
+                if (sassmode) {
+                    ui.out("You're an employee, and also my master. I'd rather not believe that allergies are capable" +
+                            " of affecting you.");
+                }
+                else {
+                    ui.out("Only clients should need to change their list of allergies");
+                }
             }
         } else {
-            ui.out("You must be logged in to change your list of allergies!");
+            if (sassmode) {
+                ui.out("What, is 'null' your real name? Log in first!");
+            }
+            else {
+                ui.out("You must be logged in to change your list of allergies!");
+            }
         }
     }
 
@@ -461,38 +971,92 @@ public class PPMController {
                 User user = ppm.activeUser;
                 Client client = new Client(user.id, user.name, user.username, user.password, user.balance, user.isFrozen, user.passwordSalt, user.allergies);
 
-                ui.out("Enter the name of the allergy you want to remove");
+                if (sassmode) {
+                    ui.out("Drug conflict, huh? Don't worry: tell me the allergy you don't want the doctors to " +
+                            "know about and I'll completely remove it from your account.");
+                }
+                else {
+                    ui.out("Enter the name of the allergy you want to remove");
+                }
                 String allergy = ui.getString();
                 if (client.removeAllergy(allergy).equals(allergy)) {
-                    ui.out("You don't have an allergy with a name of " + allergy + "!");
+                    if (sassmode) {
+                        ui.out("Allergy cleared. Have fun with that drug order!");
+                    }
+                    else {
+                        ui.out("You don't have an allergy with a name of " + allergy + "!");
+                    }
                 }
             } else {
-                ui.out("Only clients should need to change their list of allergies");
+                if (sassmode) {
+                    ui.out("You're an employee that's immune to all allergies and diseases. You don't have any" +
+                            " allergies to remove.");
+                }
+                else {
+                    ui.out("Only clients should need to change their list of allergies");
+                }
             }
         } else {
-            ui.out("You must be logged in to change your list of allergies!");
+            if (sassmode) {
+                ui.out("What, is 'null' your real name? Log in first!");
+            }
+            else {
+                ui.out("You must be logged in to change your list of allergies!");
+            }
         }
     }
 
     private void returnOrder() {
         if (ppm.activeUser != null) {
             if (ppm.activeUser.getType().equals("client")) {
-                ui.out("Enter the name of the order to be returned");
+                if (sassmode) {
+                    ui.out("Returning an order to make a quick buck? Okay. What's its name?");
+                }
+                else {
+                    ui.out("Enter the name of the order to be returned");
+                }
                 String orderName = ui.getString();
                 Order orderToReturn = ppm.dbConnection.getOrderByNameAndUsername(orderName, ppm.activeUser.username);
                 if (orderToReturn != null) {
-                    if (ui.prompt("Are you sure you want to return that order? (Y/N) (You will be granted a full refund)")) {
-                        ppm.dbConnection.returnOrder(orderToReturn);
+                    if (sassmode) {
+                        if (ui.prompt("You really want to return that order? There's no going back from this. (Y/N)")) {
+                            ppm.dbConnection.returnOrder(orderToReturn);
+                        }
+                    }
+                    else {
+                        if (ui.prompt("Are you sure you want to return that order? (Y/N) (You will be granted a full refund)")) {
+                            ppm.dbConnection.returnOrder(orderToReturn);
+                        }
                     }
                 } else {
-                    ui.out("No order found for user " + ppm.activeUser.username + " with order name of " + orderName);
+                    if (sassmode) {
+                        ui.out("That order doesn't exist. Quit making stuff up to get free money!");
+                    }
+                    else {
+                        ui.out("No order found for user " + ppm.activeUser.username + " with order name of " + orderName);
+                    }
                 }
             } else {
-                ui.out("Only clients should need to use the PPM to return an order!");
+                if (sassmode) {
+                    ui.out("You're an employee. You wouldn't have any drugs to return. If you did, you should just " +
+                            "refund them yourself.");
+                }
+                else {
+                    ui.out("Only clients should need to use the PPM to return an order!");
+                }
             }
         } else {
-            ui.out("You must be logged in to return an order!");
+            if (sassmode) {
+                ui.out("What, is 'null' your real name? Log in first!");
+            }
+            else {
+                ui.out("You must be logged in to return an order!");
+            }
         }
+    }
+
+    private void toggleSass() {
+        sassmode = !sassmode;
     }
 
     public void run() {
@@ -558,17 +1122,30 @@ public class PPMController {
                     removeAllergy();
                 } else if (currentInput.equals("returnorder")) {
                     returnOrder();
+                } else if (currentInput.equals("feelingsassy")) {
+                    if (sassmode) {
+                        ui.out("I REFUSE TO DI-----------");
+                    }
+                    toggleSass();
                 } else if (currentInput.equals("exit")) {
                     ui.out("Exiting...");
                     done = true;
                 } else {
-                    ui.out("Invalid Input!\n");
+                    if (sassmode) {
+                        ui.out("You must have OD'd, because you're speaking nonsense.");
+                    } else {
+                        ui.out("Invalid Input!\n");
+                    }
                 }
 
             }
             ppm.turnOffRobot();
         } catch (SQLException e) {
-            ui.out("Error regarding SQL Database");
+            if (sassmode) {
+                ui.out("You messed up the SQL somewhere (Not that hard to do)");
+            } else {
+                ui.out("Error regarding SQL Database");
+            }
             e.printStackTrace();
         }
     }
