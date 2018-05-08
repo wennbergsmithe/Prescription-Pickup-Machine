@@ -1130,7 +1130,12 @@ public class PPMController {
                 } else if (currentInput.equals("exit")) {
                     ui.out("Exiting...");
                     done = true;
-                } else {
+                }  else if (currentInput.equals("disablerobot")) {
+                    ppm.turnOffRobot();
+                } else if (currentInput.equals("enablerobot")) {
+                    ppm.turnOnRobot();
+                }
+                else {
                     if (sassmode) {
                         ui.out("You must have OD'd, because you're speaking nonsense.");
                     } else {
