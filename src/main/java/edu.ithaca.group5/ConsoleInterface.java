@@ -49,6 +49,8 @@ public class ConsoleInterface implements UserInterface {
         System.out.println("removeissue - Delete a specified issue");
         System.out.println("clearsolvedissues - Delete all solved issues from the PPM");
         System.out.println("clearissues - Delete all current issues with the PPM, even if they are not solved");
+        System.out.println("enablerobot - Turns on automatic validation");
+        System.out.println("disablerobot - Turns off automatic validation");
 
     }
 
