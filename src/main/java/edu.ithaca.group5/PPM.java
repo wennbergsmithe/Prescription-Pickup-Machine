@@ -262,11 +262,16 @@ public class PPM {
      * Clears all issues labeled as solved in the PPM's list of current issues
      */
     public void clearSolvedIssues() {
+        List<Issue> solvedIssues = new ArrayList<Issue>();
         for (Issue issue : issues) {
             if (issue.solved) {
-                issues.remove(issue);
+                solvedIssues.add(issue);
             }
         }
+        for (Issue issue : solvedIssues) {
+            issues.remove(issue);
+        }
+        solvedIssues.clear();
     }
 
     /**
