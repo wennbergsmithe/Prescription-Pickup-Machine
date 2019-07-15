@@ -1,4 +1,4 @@
-# Drug-Dispenser
+# PPM
 
 ![build status](https://circleci.com/gh/martypv/Drug-Dispenser.png?circle-token=circle-token "Master Build Status")
 
